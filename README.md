@@ -6,9 +6,10 @@
 
 ## Démo
 
-🔗 App live : https://dailydrop.vercel.app  
-🪙 Contrat Celo : `[à remplir après déploiement]`  
-🪙 Contrat Base : `[à remplir après déploiement]`  
+🔗 App live : https://dailydrop-five.vercel.app
+🐙 GitHub : https://github.com/wkalidev/dailydrop
+🪙 Contrat Celo : `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b`
+🪙 Contrat Base : `0x974fB504172f2aABbecc698Ebf137202a5E4e495`
 
 ---
 
@@ -40,7 +41,7 @@
 ### 1. Cloner le repo
 
 ```bash
-git clone https://github.com/TON_USERNAME/dailydrop
+git clone https://github.com/wkalidev/dailydrop
 cd dailydrop
 ```
 
@@ -67,6 +68,7 @@ cp frontend/.env.example frontend/.env.local
 Remplis `.env.local` avec :
 - `PRIVATE_KEY` : ta clé privée (pour déployer)
 - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` : obtenir sur https://cloud.walletconnect.com
+- `NEXT_PUBLIC_CDP_PROJECT_ID` : obtenir sur https://portal.cdp.coinbase.com
 
 ---
 
@@ -76,20 +78,6 @@ Remplis `.env.local` avec :
 
 ```bash
 npm run compile
-```
-
-### Déployer sur Celo Testnet (Alfajores) — pour tester d'abord
-
-```bash
-npm run deploy:celo-testnet
-```
-
-> Obtenir des CELO de test : https://faucet.celo.org
-
-### Déployer sur Base Testnet (Sepolia)
-
-```bash
-npm run deploy:base-testnet
 ```
 
 ### Déployer sur Celo Mainnet ✅
@@ -121,16 +109,27 @@ Ouvre http://localhost:3000
 
 ## Déployer sur Vercel
 
-1. Push le dossier `frontend/` sur GitHub
+1. Push sur GitHub
 2. Connecte à Vercel : https://vercel.com/new
-3. Configure les variables d'environnement dans Vercel (copier depuis `.env.local`)
-4. Deploy !
+3. Sélectionne le repo `wkalidev/dailydrop`
+4. Root Directory → `frontend`
+5. Configure les variables d'environnement :
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Reown/WalletConnect project ID |
+| `NEXT_PUBLIC_CDP_PROJECT_ID` | Coinbase Developer Platform project ID |
+| `NEXT_PUBLIC_CELO_CONTRACT_ADDRESS` | Adresse contrat Celo mainnet |
+| `NEXT_PUBLIC_BASE_CONTRACT_ADDRESS` | Adresse contrat Base mainnet |
+| `NEXT_PUBLIC_APP_URL` | URL de l'app déployée |
+
+6. Deploy !
 
 ---
 
 ## MiniPay
 
-L'app détecte automatiquement MiniPay via `window.ethereum.isMiniPay`.  
+L'app détecte automatiquement MiniPay via `window.ethereum.isMiniPay`.
 Si MiniPay est détecté :
 - Connexion wallet automatique
 - Badge "✅ MiniPay" affiché
@@ -139,16 +138,18 @@ Si MiniPay est détecté :
 Pour tester dans MiniPay :
 1. Télécharge MiniPay sur Android
 2. Active le mode développeur dans les paramètres
-3. Entre l'URL de ton app en local avec ngrok
+3. Entre l'URL : https://dailydrop-five.vercel.app
 
 ---
 
 ## Farcaster Frame
 
-Le Frame est disponible à `/api/frame`.  
+Le Frame est disponible à `/api/frame`.
 Il permet aux utilisateurs Farcaster de voir leur streak et d'ouvrir l'app directement depuis Warpcast.
 
 Pour tester : https://warpcast.com/~/developers/frames
+
+URL du frame : https://dailydrop-five.vercel.app/api/frame
 
 ---
 
@@ -183,13 +184,28 @@ dailydrop/
 
 ---
 
-## Proof of Ship — Celo
+## Contrats déployés
 
-Ce projet a été créé pour le programme **Celo Proof of Ship (Avril 2026)**.
+| Network | Adresse |
+|---|---|
+| Celo Mainnet | `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b` |
+| Base Mainnet | `0x974fB504172f2aABbecc698Ebf137202a5E4e495` |
 
-- ✅ Build for MiniPay : hook isMiniPay détecté, connexion auto
-- ✅ Deploy on Celo Mainnet : contrat DailyDrop déployé
-- ✅ Submit : soumis sur talent.app
+Vérifier sur :
+- Celo : https://celoscan.io/address/0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b
+- Base : https://basescan.org/address/0x974fB504172f2aABbecc698Ebf137202a5E4e495
+
+---
+
+## Proof of Ship — Celo (Avril 2026)
+
+Ce projet participe au programme **Celo Proof of Ship**.
+
+- ✅ Build for MiniPay : hook `isMiniPay` détecté, connexion automatique
+- ✅ Deploy on Celo Mainnet : contrat `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b`
+- ✅ Deploy on Base Mainnet : contrat `0x974fB504172f2aABbecc698Ebf137202a5E4e495`
+- ✅ App live : https://dailydrop-five.vercel.app
+- ✅ Farcaster Frame : https://dailydrop-five.vercel.app/api/frame
 
 ---
 
