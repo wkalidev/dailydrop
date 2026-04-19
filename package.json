@@ -1,0 +1,24 @@
+{
+  "name": "dailydrop-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:celo": "hardhat run deploy/deploy.ts --network celo",
+    "deploy:base": "hardhat run deploy/deploy.ts --network base",
+    "deploy:celo-testnet": "hardhat run deploy/deploy.ts --network celoAlfajores",
+    "deploy:base-testnet": "hardhat run deploy/deploy.ts --network baseSepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "hardhat": "^2.22.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0",
+    "dotenv": "^16.0.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  }
+}
