@@ -24,7 +24,6 @@ export default function Leaderboard() {
     const fetchLeaders = async () => {
       if (!publicClient || !contractAddress) return;
       try {
-        // Récupère les events CheckIn pour trouver les utilisateurs actifs
         const logs = await publicClient.getLogs({
           address: contractAddress,
           event: {
@@ -36,13 +35,12 @@ export default function Leaderboard() {
               { name: "timestamp", type: "uint256", indexed: false },
             ],
           },
-          fromBlock: "earliest",
+          fromBlock: BigInt(647399),
+          toBlock: "latest",
         });
 
-        // Déduplique les adresses
         const uniqueAddresses = [...new Set(logs.map((l) => l.args.user as `0x${string}`))];
 
-        // Récupère les données de chaque utilisateur
         const entries = await Promise.all(
           uniqueAddresses.map(async (addr) => {
             const data = await publicClient.readContract({
@@ -59,7 +57,6 @@ export default function Leaderboard() {
           })
         );
 
-        // Trie par streak décroissant
         entries.sort((a, b) => b.streak - a.streak || b.totalCheckIns - a.totalCheckIns);
         setLeaders(entries.slice(0, 20));
       } catch (err) {
@@ -101,7 +98,11 @@ export default function Leaderboard() {
         <h1 className="hero-title" style={{ fontSize: "clamp(28px,6vw,38px)" }}>
           Top Streaks 🏆
         </h1>
-        <p className="hero-sub">The most dedicated daily check-in warriors.</p>
+        <p className="hero-sub">
+          {leaders.length > 0
+            ? `${leaders.length} warriors checking in daily.`
+            : "The most dedicated daily check-in warriors."}
+        </p>
       </section>
 
       <div className="app-card" style={{ padding: "8px 0", gap: 0 }}>
