@@ -1,0 +1,46 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  <circle cx="200" cy="150" r="350" fill="#f97316" opacity="0.05"/>
+  <circle cx="1050" cy="520" r="280" fill="#f97316" opacity="0.04"/>
+  <line x1="0" y1="210" x2="1200" y2="210" stroke="#161616" stroke-width="1"/>
+  <line x1="0" y1="420" x2="1200" y2="420" stroke="#161616" stroke-width="1"/>
+  <line x1="400" y1="0" x2="400" y2="630" stroke="#161616" stroke-width="1"/>
+  <line x1="800" y1="0" x2="800" y2="630" stroke="#161616" stroke-width="1"/>
+  <!-- Logo -->
+  <circle cx="100" cy="110" r="60" fill="#f97316"/>
+  <path d="M100 68 C113 86 126 100 126 118 C126 136 115 146 100 146 C85 146 74 136 74 118 C74 100 87 86 100 68Z" fill="#ffffff" opacity="0.95"/>
+  <circle cx="89" cy="114" r="14" fill="#ffffff" opacity="0.35"/>
+  <!-- Wordmark -->
+  <text x="185" y="135" font-family="system-ui,-apple-system,sans-serif" font-size="96" font-weight="700" letter-spacing="-4" fill="#ffffff">Daily<tspan fill="#f97316">Drop</tspan></text>
+  <!-- Tagline -->
+  <text x="185" y="185" font-family="system-ui,-apple-system,sans-serif" font-size="32" fill="#666666" letter-spacing="0">Check in daily on-chain. Earn DROP tokens.</text>
+  <!-- Divider -->
+  <line x1="80" y1="220" x2="1120" y2="220" stroke="#1e1e1e" stroke-width="1"/>
+  <!-- Stat 1 -->
+  <rect x="80" y="255" width="300" height="130" rx="16" fill="#111111" stroke="#1e1e1e" stroke-width="1"/>
+  <text x="230" y="330" font-family="monospace" font-size="72" font-weight="700" fill="#f97316" text-anchor="middle">7</text>
+  <text x="230" y="368" font-family="system-ui,-apple-system,sans-serif" font-size="18" fill="#555555" text-anchor="middle" letter-spacing="2">DAY STREAK</text>
+  <!-- Stat 2 -->
+  <rect x="420" y="255" width="360" height="130" rx="16" fill="#111111" stroke="#1e1e1e" stroke-width="1"/>
+  <text x="600" y="330" font-family="monospace" font-size="72" font-weight="700" fill="#f97316" text-anchor="middle">10</text>
+  <text x="600" y="368" font-family="system-ui,-apple-system,sans-serif" font-size="18" fill="#555555" text-anchor="middle" letter-spacing="2">DROP TOKENS</text>
+  <!-- Stat 3 -->
+  <rect x="820" y="255" width="300" height="130" rx="16" fill="#111111" stroke="#1e1e1e" stroke-width="1"/>
+  <text x="970" y="325" font-family="monospace" font-size="52" font-weight="700" fill="#f97316" text-anchor="middle">24h</text>
+  <text x="970" y="368" font-family="system-ui,-apple-system,sans-serif" font-size="18" fill="#555555" text-anchor="middle" letter-spacing="2">CHECK-IN</text>
+  <!-- Bottom -->
+  <line x1="80" y1="420" x2="1120" y2="420" stroke="#1e1e1e" stroke-width="1"/>
+  <!-- Pills -->
+  <rect x="80" y="445" width="110" height="36" rx="18" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="135" y="468" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="600" fill="#aaaaaa" text-anchor="middle">CELO</text>
+  <rect x="205" y="445" width="110" height="36" rx="18" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="260" y="468" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="600" fill="#aaaaaa" text-anchor="middle">BASE</text>
+  <rect x="330" y="445" width="150" height="36" rx="18" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="405" y="468" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="600" fill="#aaaaaa" text-anchor="middle">MINIPAY</text>
+  <rect x="495" y="445" width="180" height="36" rx="18" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+  <text x="585" y="468" font-family="system-ui,-apple-system,sans-serif" font-size="18" font-weight="600" fill="#aaaaaa" text-anchor="middle">FARCASTER</text>
+  <!-- URL -->
+  <text x="1120" y="468" font-family="monospace" font-size="18" fill="#333333" text-anchor="end">dailydrop-five.vercel.app</text>
+  <!-- Bottom accent -->
+  <rect x="0" y="618" width="1200" height="12" fill="#f97316" opacity="0.6"/>
+</svg>

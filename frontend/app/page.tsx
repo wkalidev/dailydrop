@@ -169,6 +169,7 @@ export default function Home() {
             <path d="M32 14 C39 23 46 30 46 39 C46 48 40 54 32 54 C24 54 18 48 18 39 C18 30 25 23 32 14Z" fill="#fff" opacity="0.95"/>
           </svg>
           <span>DailyDrop</span>
+          <a href="/leaderboard">🏆 Leaderboard</a>
         </div>
         <p>Built on Celo &amp; Base · Compatible with MiniPay &amp; Farcaster</p>
         <a href="/api/frame" target="_blank" rel="noopener noreferrer">Farcaster Frame</a>
