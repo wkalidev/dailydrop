@@ -16,6 +16,13 @@ export default function Home() {
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [refreshKey, setRefreshKey] = useState(0);
 
+  useEffect(() => {
+  // Signale à Farcaster que l'app est prête
+  import("@farcaster/frame-sdk").then(({ sdk }) => {
+    sdk.actions.ready();
+  });
+}, []);
+
   const { data: userData, refetch: refetchUser } = useReadContract({
     address: contractAddress,
     abi: DAILYDROP_ABI,
