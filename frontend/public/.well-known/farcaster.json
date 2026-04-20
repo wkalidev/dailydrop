@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "DailyDrop",
+    "iconUrl": "https://dailydrop-five.vercel.app/icon-512.svg",
+    "homeUrl": "https://dailydrop-five.vercel.app",
+    "imageUrl": "https://dailydrop-five.vercel.app/og-image.png",
+    "buttonTitle": "🔥 Check In",
+    "splashImageUrl": "https://dailydrop-five.vercel.app/icon-512.svg",
+    "splashBackgroundColor": "#0a0a0a",
+    "webhookUrl": "https://dailydrop-five.vercel.app/api/frame"
+  }
+}
