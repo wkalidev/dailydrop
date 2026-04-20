@@ -53,7 +53,13 @@ export default function Home() {
       {/* Header */}
       <header className="app-header">
         <div className="logo">
-          <span className="logo-icon">☀️</span>
+          {/* Logo SVG inline */}
+          <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="64" height="64" rx="14" fill="#111111"/>
+            <circle cx="32" cy="30" r="24" fill="#f97316"/>
+            <path d="M32 14 C39 23 46 30 46 39 C46 48 40 54 32 54 C24 54 18 48 18 39 C18 30 25 23 32 14Z" fill="#ffffff" opacity="0.95"/>
+            <circle cx="26" cy="36" r="6" fill="#ffffff" opacity="0.4"/>
+          </svg>
           <span className="logo-text">DailyDrop</span>
         </div>
         <div className="header-right">
@@ -98,7 +104,14 @@ export default function Home() {
         </div>
       ) : !isConnected ? (
         <div className="connect-prompt">
-          <div className="connect-icon">🔗</div>
+          <div className="connect-icon">
+            <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="64" height="64" rx="14" fill="#1a1a1a"/>
+              <circle cx="32" cy="30" r="24" fill="#f97316" opacity="0.8"/>
+              <path d="M32 14 C39 23 46 30 46 39 C46 48 40 54 32 54 C24 54 18 48 18 39 C18 30 25 23 32 14Z" fill="#ffffff" opacity="0.95"/>
+              <circle cx="26" cy="36" r="6" fill="#ffffff" opacity="0.4"/>
+            </svg>
+          </div>
           <p>Connect your wallet to start your streak</p>
           {!isMiniPay && (
             <ConnectButton label="Connect Wallet" />
@@ -131,6 +144,14 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="app-footer">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "6px" }}>
+          <svg width="16" height="16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="64" height="64" rx="14" fill="#111"/>
+            <circle cx="32" cy="30" r="24" fill="#f97316"/>
+            <path d="M32 14 C39 23 46 30 46 39 C46 48 40 54 32 54 C24 54 18 48 18 39 C18 30 25 23 32 14Z" fill="#fff" opacity="0.95"/>
+          </svg>
+          <span>DailyDrop</span>
+        </div>
         <p>Built on Celo &amp; Base · Compatible with MiniPay &amp; Farcaster</p>
         <a href="/api/frame" target="_blank" rel="noopener noreferrer">Farcaster Frame</a>
       </footer>

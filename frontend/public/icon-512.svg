@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="115" fill="#111111"/>
+  <!-- Subtle grid -->
+  <line x1="0" y1="170" x2="512" y2="170" stroke="#1e1e1e" stroke-width="2"/>
+  <line x1="0" y1="342" x2="512" y2="342" stroke="#1e1e1e" stroke-width="2"/>
+  <line x1="170" y1="0" x2="170" y2="512" stroke="#1e1e1e" stroke-width="2"/>
+  <line x1="342" y1="0" x2="342" y2="512" stroke="#1e1e1e" stroke-width="2"/>
+  <!-- Glow -->
+  <circle cx="256" cy="230" r="180" fill="#f97316" opacity="0.08"/>
+  <!-- Main icon -->
+  <circle cx="256" cy="230" r="160" fill="#f97316"/>
+  <path d="M256 70 C292 130 328 180 328 230 C328 300 298 350 256 350 C214 350 184 300 184 230 C184 180 220 130 256 70Z" fill="#ffffff" opacity="0.95"/>
+  <circle cx="224" cy="220" r="40" fill="#ffffff" opacity="0.35"/>
+  <!-- Tagline -->
+  <text x="256" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="#f97316" text-anchor="middle" letter-spacing="8">DROP</text>
+</svg>

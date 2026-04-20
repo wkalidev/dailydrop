@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80">
+  <rect width="320" height="80" rx="0" fill="transparent"/>
+  <!-- Icon -->
+  <circle cx="40" cy="40" r="32" fill="#f97316" opacity="0.12"/>
+  <circle cx="40" cy="40" r="26" fill="#f97316"/>
+  <path d="M40 22 C47 31 54 38 54 46 C54 55 48 60 40 60 C32 60 26 55 26 46 C26 38 33 31 40 22Z" fill="#ffffff" opacity="0.95"/>
+  <circle cx="34" cy="44" r="5" fill="#ffffff" opacity="0.45"/>
+  <!-- Wordmark -->
+  <text x="80" y="50" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#ffffff" letter-spacing="-1">Daily</text>
+  <text x="183" y="50" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#f97316" letter-spacing="-1">Drop</text>
+</svg>
