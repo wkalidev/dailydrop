@@ -8,6 +8,7 @@ import { CheckInButton } from "../components/CheckInButton";
 import { StreakDisplay } from "../components/StreakDisplay";
 import { MiniPayBadge, useMiniPay } from "../components/MiniPayDetector";
 import { DAILYDROP_ABI, CONTRACT_ADDRESSES } from "../lib/contract";
+import { AddTokenButton } from "../components/AddTokenButton";
 
 export default function Home() {
   const { address, isConnected } = useAccount();
@@ -16,23 +17,23 @@ export default function Home() {
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [refreshKey, setRefreshKey] = useState(0);
 
- useEffect(() => {
-  const initFarcaster = async () => {
-    try {
-      const { sdk } = await import("@farcaster/frame-sdk");
-      const context = await sdk.context;
-      if (context?.client?.clientFid) {
-        await sdk.wallet.ethProvider.request({
-          method: "eth_requestAccounts",
-        });
+  useEffect(() => {
+    const initFarcaster = async () => {
+      try {
+        const { sdk } = await import("@farcaster/frame-sdk");
+        const context = await sdk.context;
+        if (context?.client?.clientFid) {
+          await sdk.wallet.ethProvider.request({
+            method: "eth_requestAccounts",
+          });
+        }
+        await sdk.actions.ready();
+      } catch (err) {
+        console.log("Not in Farcaster context:", err);
       }
-      await sdk.actions.ready();
-    } catch (err) {
-      console.log("Not in Farcaster context:", err);
-    }
-  };
-  initFarcaster();
-}, []);
+    };
+    initFarcaster();
+  }, []);
 
   const { data: userData, refetch: refetchUser } = useReadContract({
     address: contractAddress,
@@ -57,7 +58,6 @@ export default function Home() {
   }, [refetchUser, refetchBalance]);
 
   const streak = userData ? Number(userData[0]) : 0;
-  const lastCheckIn = userData ? Number(userData[1]) : 0;
   const totalCheckIns = userData ? Number(userData[2]) : 0;
   const canCheckIn = userData ? userData[3] : true;
   const canClaim = userData ? userData[4] : false;
@@ -71,7 +71,6 @@ export default function Home() {
       {/* Header */}
       <header className="app-header">
         <div className="logo">
-          {/* Logo SVG inline */}
           <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="64" height="64" rx="14" fill="#111111"/>
             <circle cx="32" cy="30" r="24" fill="#f97316"/>
@@ -119,6 +118,7 @@ export default function Home() {
             canClaim={canClaim as boolean}
             onSuccess={handleSuccess}
           />
+          <AddTokenButton />
         </div>
       ) : !isConnected ? (
         <div className="connect-prompt">
