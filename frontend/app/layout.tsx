@@ -36,6 +36,7 @@ export const metadata: Metadata = {
   },
   other: {
     "base:app_id": "69e56bc887970a2e83bef402",
+    "talentapp:project_verification": "0b22c6a1c2582dd366f212943bcf48eb1039804eb76152f98a8ec0c884ea0fe70edd9320cdfcc9c65a243808117acba320903f02f90b38521232f86c57d2d46d",
     "fc:frame": "vNext",
     "fc:frame:image": `${APP_URL}/og-image.png`,
     "fc:frame:image:aspect_ratio": "1.91:1",
