@@ -16,11 +16,22 @@ export default function Home() {
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => {
-  // Signale à Farcaster que l'app est prête
-  import("@farcaster/frame-sdk").then(({ sdk }) => {
-    sdk.actions.ready();
-  });
+ useEffect(() => {
+  const initFarcaster = async () => {
+    try {
+      const { sdk } = await import("@farcaster/frame-sdk");
+      const context = await sdk.context;
+      if (context?.client?.clientFid) {
+        await sdk.wallet.ethProvider.request({
+          method: "eth_requestAccounts",
+        });
+      }
+      await sdk.actions.ready();
+    } catch (err) {
+      console.log("Not in Farcaster context:", err);
+    }
+  };
+  initFarcaster();
 }, []);
 
   const { data: userData, refetch: refetchUser } = useReadContract({
