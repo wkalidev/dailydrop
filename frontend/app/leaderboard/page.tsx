@@ -12,6 +12,13 @@ interface LeaderEntry {
   totalCheckIns: number;
 }
 
+const CELOSCAN_API = "https://api.celoscan.io/api";
+const CELO_CONTRACT = "0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b";
+// CheckIn event topic0
+const CHECKIN_TOPIC = "0x" + Array.from(
+  new TextEncoder().encode("CheckIn(address,uint256,uint256)")
+).reduce((h, b) => h, "");
+
 export default function Leaderboard() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -19,48 +26,62 @@ export default function Leaderboard() {
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [leaders, setLeaders] = useState<LeaderEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchLeaders = async () => {
       if (!publicClient || !contractAddress) return;
       try {
-        const logs = await publicClient.getLogs({
-          address: contractAddress,
-          event: {
-            name: "CheckIn",
-            type: "event",
-            inputs: [
-              { name: "user", type: "address", indexed: true },
-              { name: "streak", type: "uint256", indexed: false },
-              { name: "timestamp", type: "uint256", indexed: false },
-            ],
-          },
-          fromBlock: BigInt(647399),
-          toBlock: "latest",
-        });
+        // Utilise l'API Celoscan pour récupérer les transactions
+        const url = `${CELOSCAN_API}?module=account&action=txlist&address=${CELO_CONTRACT}&startblock=647399&endblock=latest&sort=asc&apikey=YourApiKeyToken`;
+        const res = await fetch(url);
+        const json = await res.json();
 
-        const uniqueAddresses = [...new Set(logs.map((l) => l.args.user as `0x${string}`))];
+        if (json.status !== "1" || !json.result) {
+          throw new Error("Celoscan API error");
+        }
 
+        // Filtre les transactions checkIn (selector = 0x183ff085)
+        const checkInTxs = json.result.filter(
+          (tx: { input: string }) => tx.input?.startsWith("0x183ff085")
+        );
+
+        // Déduplique les adresses des expéditeurs
+        const uniqueAddresses = [
+          ...new Set(checkInTxs.map((tx: { from: string }) => tx.from as `0x${string}`)),
+        ] as `0x${string}`[];
+
+        if (uniqueAddresses.length === 0) {
+          setLeaders([]);
+          return;
+        }
+
+        // Récupère les données on-chain pour chaque utilisateur
         const entries = await Promise.all(
           uniqueAddresses.map(async (addr) => {
-            const data = await publicClient.readContract({
-              address: contractAddress,
-              abi: DAILYDROP_ABI,
-              functionName: "getUserData",
-              args: [addr],
-            }) as [bigint, bigint, bigint, boolean, boolean, bigint];
-            return {
-              address: addr,
-              streak: Number(data[0]),
-              totalCheckIns: Number(data[2]),
-            };
+            try {
+              const data = await publicClient.readContract({
+                address: contractAddress,
+                abi: DAILYDROP_ABI,
+                functionName: "getUserData",
+                args: [addr],
+              }) as [bigint, bigint, bigint, boolean, boolean, bigint];
+              return {
+                address: addr,
+                streak: Number(data[0]),
+                totalCheckIns: Number(data[2]),
+              };
+            } catch {
+              return { address: addr, streak: 0, totalCheckIns: 0 };
+            }
           })
         );
 
         entries.sort((a, b) => b.streak - a.streak || b.totalCheckIns - a.totalCheckIns);
-        setLeaders(entries.slice(0, 20));
+        setLeaders(entries.filter((e) => e.totalCheckIns > 0).slice(0, 20));
       } catch (err) {
-        console.error("Failed to fetch leaderboard:", err);
+        console.error("Leaderboard error:", err);
+        setError("Could not load leaderboard. Try again later.");
       } finally {
         setLoading(false);
       }
@@ -109,6 +130,10 @@ export default function Leaderboard() {
         {loading ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-dim)" }}>
             <span className="spinner" style={{ width: 24, height: 24, borderWidth: 3, display: "inline-block" }} />
+          </div>
+        ) : error ? (
+          <div style={{ padding: "40px", textAlign: "center", color: "var(--error)" }}>
+            {error}
           </div>
         ) : leaders.length === 0 ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-dim)" }}>
