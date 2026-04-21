@@ -12,12 +12,15 @@ interface LeaderEntry {
   totalCheckIns: number;
 }
 
-const CELOSCAN_API = "https://api.celoscan.io/api";
-const CELO_CONTRACT = "0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b";
-// CheckIn event topic0
-const CHECKIN_TOPIC = "0x" + Array.from(
-  new TextEncoder().encode("CheckIn(address,uint256,uint256)")
-).reduce((h, b) => h, "");
+const KNOWN_ADDRESSES: `0x${string}`[] = [
+  "0x6C98AB949Be4CDe57Db7A5286f27959Df1eD3937",
+  "0x47825De02131f9d1b11718FD040A6FA4b28c5fEc",
+  "0xE3143a87365D680D1eB19379F00C9ED0f416EC5d",
+  "0x0A2dC3204E8F3b6b2a72BB97303Ae8C879E287bC",
+  "0xcF314d504C5FCc04fC85fc567878C36c16B16B68",
+  "0x97Ce1AaECd6e434C71B540Dd089eeCf735Cb2fe0",
+  "0xDEAcDe6eC27Fd0cD972c1232C4f0d4171dda2357",
+];
 
 export default function Leaderboard() {
   const { address, isConnected } = useAccount();
@@ -26,67 +29,58 @@ export default function Leaderboard() {
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [leaders, setLeaders] = useState<LeaderEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [lastUpdated, setLastUpdated] = useState("");
 
   useEffect(() => {
     const fetchLeaders = async () => {
       if (!publicClient || !contractAddress) return;
+
+      // Essaie l'API, sinon utilise les adresses connues directement
+      let addresses: `0x${string}`[] = KNOWN_ADDRESSES;
       try {
-        // Utilise l'API Celoscan pour récupérer les transactions
-        const url = `${CELOSCAN_API}?module=account&action=txlist&address=${CELO_CONTRACT}&startblock=647399&endblock=latest&sort=asc&apikey=YourApiKeyToken`;
-        const res = await fetch(url);
-        const json = await res.json();
-
-        if (json.status !== "1" || !json.result) {
-          throw new Error("Celoscan API error");
+        const res = await fetch("/api/leaderboard");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.addresses?.length > 0) {
+            addresses = json.addresses;
+          }
         }
-
-        // Filtre les transactions checkIn (selector = 0x183ff085)
-        const checkInTxs = json.result.filter(
-          (tx: { input: string }) => tx.input?.startsWith("0x183ff085")
-        );
-
-        // Déduplique les adresses des expéditeurs
-        const uniqueAddresses = [
-          ...new Set(checkInTxs.map((tx: { from: string }) => tx.from as `0x${string}`)),
-        ] as `0x${string}`[];
-
-        if (uniqueAddresses.length === 0) {
-          setLeaders([]);
-          return;
-        }
-
-        // Récupère les données on-chain pour chaque utilisateur
-        const entries = await Promise.all(
-          uniqueAddresses.map(async (addr) => {
-            try {
-              const data = await publicClient.readContract({
-                address: contractAddress,
-                abi: DAILYDROP_ABI,
-                functionName: "getUserData",
-                args: [addr],
-              }) as [bigint, bigint, bigint, boolean, boolean, bigint];
-              return {
-                address: addr,
-                streak: Number(data[0]),
-                totalCheckIns: Number(data[2]),
-              };
-            } catch {
-              return { address: addr, streak: 0, totalCheckIns: 0 };
-            }
-          })
-        );
-
-        entries.sort((a, b) => b.streak - a.streak || b.totalCheckIns - a.totalCheckIns);
-        setLeaders(entries.filter((e) => e.totalCheckIns > 0).slice(0, 20));
-      } catch (err) {
-        console.error("Leaderboard error:", err);
-        setError("Could not load leaderboard. Try again later.");
-      } finally {
-        setLoading(false);
+      } catch {
+        // Utilise KNOWN_ADDRESSES
       }
+
+      // Lit les données on-chain pour chaque adresse
+      const entries = await Promise.allSettled(
+        addresses.map(async (addr) => {
+          const data = await publicClient.readContract({
+            address: contractAddress,
+            abi: DAILYDROP_ABI,
+            functionName: "getUserData",
+            args: [addr],
+          }) as [bigint, bigint, bigint, boolean, boolean, bigint];
+          return {
+            address: addr,
+            streak: Number(data[0]),
+            totalCheckIns: Number(data[2]),
+          };
+        })
+      );
+
+      const valid = entries
+  .filter((r) => r.status === "fulfilled")
+  .map((r) => (r as PromiseFulfilledResult<LeaderEntry>).value)
+        .filter((e) => e.totalCheckIns > 0)
+        .sort((a, b) => b.streak - a.streak || b.totalCheckIns - a.totalCheckIns)
+        .slice(0, 20);
+
+      setLeaders(valid);
+      setLastUpdated(new Date().toLocaleTimeString());
+      setLoading(false);
     };
+
     fetchLeaders();
+    const interval = setInterval(fetchLeaders, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, [publicClient, contractAddress]);
 
   const shortAddress = (addr: string) =>
@@ -131,10 +125,6 @@ export default function Leaderboard() {
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-dim)" }}>
             <span className="spinner" style={{ width: 24, height: 24, borderWidth: 3, display: "inline-block" }} />
           </div>
-        ) : error ? (
-          <div style={{ padding: "40px", textAlign: "center", color: "var(--error)" }}>
-            {error}
-          </div>
         ) : leaders.length === 0 ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-dim)" }}>
             No check-ins yet. Be the first!
@@ -163,6 +153,12 @@ export default function Leaderboard() {
           ))
         )}
       </div>
+
+      {lastUpdated && (
+        <p style={{ textAlign: "center", fontSize: 11, color: "var(--text-muted)" }}>
+          Updated at {lastUpdated} · refreshes every 5 min
+        </p>
+      )}
 
       <div style={{ textAlign: "center" }}>
         <Link href="/" style={{ color: "var(--accent)", fontSize: 14, textDecoration: "none" }}>

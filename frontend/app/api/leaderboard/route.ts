@@ -13,35 +13,30 @@ const KNOWN_ADDRESSES = [
 ];
 
 export async function GET() {
+  // Retourne toujours les adresses connues + essaie d'en trouver de nouvelles
   try {
     const url = `https://api.celoscan.io/api?module=account&action=txlist&address=${CELO_CONTRACT}&startblock=647399&endblock=latest&sort=asc`;
-
     const res = await fetch(url, {
-      next: { revalidate: 300 }, // cache 5 minutes
+      next: { revalidate: 300 },
+      headers: { "Accept": "application/json" },
     });
-
     const json = await res.json();
 
-    if (json.status === "1" && Array.isArray(json.result)) {
+    if (json.status === "1" && Array.isArray(json.result) && json.result.length > 0) {
       const fromApi = json.result
-        .filter(
-          (tx: { isError: string; to: string }) =>
-            tx.isError === "0" &&
-            tx.to?.toLowerCase() === CELO_CONTRACT.toLowerCase()
+        .filter((tx: { isError: string; to: string }) =>
+          tx.isError === "0" &&
+          tx.to?.toLowerCase() === CELO_CONTRACT.toLowerCase()
         )
         .map((tx: { from: string }) => tx.from);
 
-      const merged = [
-        ...new Set([...KNOWN_ADDRESSES, ...fromApi]),
-      ];
-
-      return NextResponse.json({ addresses: merged });
+      const merged = [...new Set([...KNOWN_ADDRESSES, ...fromApi])];
+      return NextResponse.json({ addresses: merged, source: "api" });
     }
-
-    // Fallback sur les adresses connues
-    return NextResponse.json({ addresses: KNOWN_ADDRESSES });
   } catch (err) {
-    console.error("Leaderboard API error:", err);
-    return NextResponse.json({ addresses: KNOWN_ADDRESSES });
+    console.error("Celoscan fetch failed:", err);
   }
+
+  // Fallback fiable — retourne toujours les adresses connues
+  return NextResponse.json({ addresses: KNOWN_ADDRESSES, source: "fallback" });
 }
