@@ -1,8 +1,11 @@
 [project]
 name = "dailydrop"
 authors = ["wkalidev"]
+telemetry = false
 
 [contracts.dailydrop]
 path = "contracts/dailydrop.clar"
+clarity_version = 2
+epoch = "2.5"
 
 [devnet]
