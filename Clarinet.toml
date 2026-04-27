@@ -1,0 +1,8 @@
+[project]
+name = "dailydrop"
+authors = ["wkalidev"]
+
+[contracts.dailydrop]
+path = "contracts/dailydrop.clar"
+
+[devnet]
