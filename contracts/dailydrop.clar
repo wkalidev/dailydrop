@@ -1,80 +1,58 @@
-;; ============================================================
-;; DailyDrop — Clarity (Stacks / Bitcoin L2)
-;; Check-in quotidien on-chain. Streak 7 jours = 10 DROP tokens.
-;;
-;; Compatibilité : Stacks 2.1+
-;; Auteur        : wkalidev
-;; ============================================================
+;; DailyDrop - Clarity (Stacks / Bitcoin L2)
+;; Daily check-in on-chain. 7-day streak = 10 DROP tokens.
+;; Author: wkalidev
 
-;; ─── Fungible Token ──────────────────────────────────────────
+;; --- Fungible Token ---
 (define-fungible-token DROP)
 
-;; ─── Constants ───────────────────────────────────────────────
-;; ~144 blocs Bitcoin par jour (1 bloc ≈ 10 min)
+;; --- Constants ---
 (define-constant BLOCKS-PER-DAY u144)
-;; Fenêtre max avant reset du streak : 2 jours
 (define-constant BLOCKS-RESET (* BLOCKS-PER-DAY u2))
-;; Streak cible
 (define-constant STREAK-TARGET u7)
-;; Récompense : 10 DROP (6 décimales)
 (define-constant REWARD-AMOUNT u10000000)
 
-;; ─── Error codes ──────────────────────────────────────────────
-(define-constant ERR-TOO-SOON       (err u101))
-(define-constant ERR-NOT-OWNER      (err u102))
-(define-constant ERR-STREAK-LOW     (err u103))
-(define-constant ERR-ZERO-ADDRESS   (err u104))
+;; --- Error codes ---
+(define-constant ERR-TOO-SOON     (err u101))
+(define-constant ERR-NOT-OWNER    (err u102))
+(define-constant ERR-STREAK-LOW   (err u103))
+(define-constant ERR-ZERO-ADDRESS (err u104))
 
-;; ─── Data maps ────────────────────────────────────────────────
+;; --- Data maps ---
 (define-map user-streak
     principal
     {
-        streak:          uint,
-        last-checkin:    uint,   ;; block-height du dernier check-in
-        total-checkins:  uint
+        streak:         uint,
+        last-checkin:   uint,
+        total-checkins: uint
     }
 )
 
-;; ─── Owner (pour mintInitial) ─────────────────────────────────
+;; --- Owner ---
 (define-data-var contract-owner principal tx-sender)
 
-;; ─── Read-only helpers ────────────────────────────────────────
+;; --- Read-only ---
 
 (define-read-only (get-streak (user principal))
-    (default-to u0
-        (get streak (map-get? user-streak user))
-    )
+    (default-to u0 (get streak (map-get? user-streak user)))
 )
 
 (define-read-only (get-last-checkin (user principal))
-    (default-to u0
-        (get last-checkin (map-get? user-streak user))
-    )
+    (default-to u0 (get last-checkin (map-get? user-streak user)))
 )
 
 (define-read-only (get-total-checkins (user principal))
-    (default-to u0
-        (get total-checkins (map-get? user-streak user))
-    )
+    (default-to u0 (get total-checkins (map-get? user-streak user)))
 )
 
 (define-read-only (can-checkin (user principal))
-    (let (
-        (last (get-last-checkin user))
-    )
-        (or
-            (is-eq last u0)
-            (>= block-height (+ last BLOCKS-PER-DAY))
-        )
+    (let ((last (get-last-checkin user)))
+        (or (is-eq last u0) (>= block-height (+ last BLOCKS-PER-DAY)))
     )
 )
 
 (define-read-only (get-user-data (user principal))
     (let (
-        (data (default-to
-                   { streak: u0, last-checkin: u0, total-checkins: u0 }
-                   (map-get? user-streak user)
-               ))
+        (data (default-to { streak: u0, last-checkin: u0, total-checkins: u0 } (map-get? user-streak user)))
         (last (get last-checkin data))
     )
         {
@@ -88,58 +66,37 @@
     )
 )
 
-;; ─── Check-in ─────────────────────────────────────────────────
+;; --- Check-in ---
 
 (define-public (check-in)
     (let (
-        (caller      tx-sender)
+        (caller        tx-sender)
         (current-block block-height)
-        (existing    (default-to
-                         { streak: u0, last-checkin: u0, total-checkins: u0 }
-                         (map-get? user-streak caller)
-                     ))
-        (last        (get last-checkin existing))
-        (cur-streak  (get streak existing))
-        (cur-total   (get total-checkins existing))
+        (existing      (default-to { streak: u0, last-checkin: u0, total-checkins: u0 } (map-get? user-streak caller)))
+        (last          (get last-checkin existing))
+        (cur-streak    (get streak existing))
+        (cur-total     (get total-checkins existing))
     )
-        ;; Vérifier le délai minimum (24h en blocs)
         (asserts!
             (or (is-eq last u0) (>= current-block (+ last BLOCKS-PER-DAY)))
             ERR-TOO-SOON
         )
-
-        ;; Calculer le nouveau streak
-        ;; Si > 48h (BLOCKS-RESET) depuis dernier check-in → reset à 1
-        ;; Sinon → incrément
         (let (
             (new-streak
                 (if (and (> last u0) (> current-block (+ last BLOCKS-RESET)))
-                    u1      ;; streak cassé, on repart à 1 (ce check-in compte)
+                    u1
                     (+ cur-streak u1)
                 )
             )
         )
-            ;; Persister
             (map-set user-streak caller
-                {
-                    streak:         new-streak,
-                    last-checkin:   current-block,
-                    total-checkins: (+ cur-total u1)
-                }
+                { streak: new-streak, last-checkin: current-block, total-checkins: (+ cur-total u1) }
             )
-
-            ;; Si streak atteint : auto-claim + reset
             (if (>= new-streak STREAK-TARGET)
                 (begin
-                    ;; Reset le streak
                     (map-set user-streak caller
-                        {
-                            streak:         u0,
-                            last-checkin:   current-block,
-                            total-checkins: (+ cur-total u1)
-                        }
+                        { streak: u0, last-checkin: current-block, total-checkins: (+ cur-total u1) }
                     )
-                    ;; Mint la récompense
                     (try! (ft-mint? DROP REWARD-AMOUNT caller))
                     (print { event: "reward-claimed", user: caller, amount: REWARD-AMOUNT, block: current-block })
                     (ok { action: "claimed", streak: u0, reward: REWARD-AMOUNT })
@@ -153,33 +110,23 @@
     )
 )
 
-;; ─── Claim manuel (si besoin) ─────────────────────────────────
-;; Séparé pour compatibilité avec le frontend existant
+;; --- Claim reward manually ---
 
 (define-public (claim-reward)
     (let (
         (caller     tx-sender)
-        (existing   (default-to
-                        { streak: u0, last-checkin: u0, total-checkins: u0 }
-                        (map-get? user-streak caller)
-                    ))
+        (existing   (default-to { streak: u0, last-checkin: u0, total-checkins: u0 } (map-get? user-streak caller)))
         (cur-streak (get streak existing))
     )
         (asserts! (>= cur-streak STREAK-TARGET) ERR-STREAK-LOW)
-
-        ;; Reset streak
-        (map-set user-streak caller
-            (merge existing { streak: u0 })
-        )
-
-        ;; Mint
+        (map-set user-streak caller (merge existing { streak: u0 }))
         (try! (ft-mint? DROP REWARD-AMOUNT caller))
         (print { event: "reward-claimed", user: caller, amount: REWARD-AMOUNT })
         (ok REWARD-AMOUNT)
     )
 )
 
-;; ─── Owner : mint initial (liquidité) ────────────────────────
+;; --- Owner: mint initial supply ---
 
 (define-public (mint-initial (recipient principal) (amount uint))
     (begin
@@ -188,7 +135,7 @@
     )
 )
 
-;; ─── SIP-010 helpers ──────────────────────────────────────────
+;; --- SIP-010 helpers ---
 
 (define-read-only (get-balance (account principal))
     (ok (ft-get-balance DROP account))
@@ -214,8 +161,7 @@
     (ok (some u"https://dailydrop-five.vercel.app/token-metadata"))
 )
 
-;; ─── Relayer cross-chain ──────────────────────────────────────
-;; Appelé par un relayer autorisé pour synchroniser depuis Base
+;; --- Cross-chain relayer ---
 
 (define-map authorized-relayers principal bool)
 
@@ -227,28 +173,20 @@
     )
 )
 
-;; Mise à jour du streak depuis le relayer cross-chain
 (define-public (update-streak-from-relayer
     (user principal)
     (new-streak uint)
     (source-chain (string-ascii 16))
 )
-    (let (
-        (caller tx-sender)
-    )
+    (let ((caller tx-sender))
         (asserts!
             (default-to false (map-get? authorized-relayers caller))
             ERR-NOT-OWNER
         )
         (let (
-            (existing (default-to
-                           { streak: u0, last-checkin: u0, total-checkins: u0 }
-                           (map-get? user-streak user)
-                       ))
+            (existing (default-to { streak: u0, last-checkin: u0, total-checkins: u0 } (map-get? user-streak user)))
         )
-            (map-set user-streak user
-                (merge existing { streak: new-streak })
-            )
+            (map-set user-streak user (merge existing { streak: new-streak }))
             (print { event: "relayer-update", user: user, streak: new-streak, chain: source-chain })
             (ok true)
         )
