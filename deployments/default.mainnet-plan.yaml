@@ -1,0 +1,18 @@
+---
+id: 0
+name: Mainnet deployment
+network: mainnet
+stacks-node: "https://stacks-node-api.mainnet.stacks.co"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoin.blockstack.com:8332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: dailydrop
+            expected-sender: SP2WJN9VW3PY4401XRJ617YW3MECMEZKTK65BREVE
+            cost: 58940
+            path: contracts/dailydrop.clar
+            anchor-block-only: true
+            clarity-version: 2
+      epoch: "2.5"
