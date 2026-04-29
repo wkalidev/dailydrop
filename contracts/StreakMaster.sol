@@ -53,10 +53,15 @@ contract StreakMaster is Ownable, ReentrancyGuard {
     event NFTContractSet(address nftContract);
 
     // ─── Modifiers ────────────────────────────────────────────────────────────
-    modifier onlyRelayer() {
-        require(relayers[msg.sender] || msg.sender == owner(), "StreakMaster: not a relayer");
-        _;
-    }
+    modifier onlyRelayer() {  
+        require(relayers[msg.sender], "StreakMaster: not a relayer");  
+         _;  
+    }  
+  
+    modifier onlyOwnerOrRelayer() {  
+        require(relayers[msg.sender] || msg.sender == owner(), "StreakMaster: unauthorized");  
+        _;  
+    }  
 
     constructor() Ownable(msg.sender) {}
 
