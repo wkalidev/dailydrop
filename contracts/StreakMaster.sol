@@ -43,6 +43,7 @@ contract StreakMaster is Ownable, ReentrancyGuard {
     mapping(address => bool)      public  relayers;      // adresses autorisées à relayer
     mapping(string  => address)   public  dropContracts; // chain → adresse DROP ERC20
     address public streakNFT;
+    mapping(bytes32 => bool) public usedTxProofs;  
 
     // ─── Events ───────────────────────────────────────────────────────────────
     event StreakUpdated(address indexed user, uint256 streak, string chain, uint256 timestamp);
@@ -90,9 +91,10 @@ contract StreakMaster is Ownable, ReentrancyGuard {
         string calldata chain,
         bytes32 txProof
     ) external onlyRelayer nonReentrant {
+        require(!usedTxProofs[txProof], "StreakMaster: txProof already used");  
         require(user != address(0), "StreakMaster: zero address");
         require(bytes(chain).length > 0, "StreakMaster: empty chain");
-
+        usedTxProofs[txProof] = true;
         UserData storage u = userData[user];
         uint256 now_ = block.timestamp;
 
