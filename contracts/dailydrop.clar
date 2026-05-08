@@ -88,17 +88,21 @@
                     (+ cur-streak u1)
                 )
             )
+            (should-reward (>= new-streak STREAK-TARGET))
         )
+            ;; Update base streak data first
             (map-set user-streak caller
-                { streak: new-streak, last-checkin: current-block, total-checkins: (+ cur-total u1) }
+                { 
+                    streak: (if should-reward u0 new-streak),  ;; Reset after reward
+                    last-checkin: current-block, 
+                    total-checkins: (+ cur-total u1) 
+                }
             )
-            (if (>= new-streak STREAK-TARGET)
+            
+            (if should-reward
                 (begin
-                    (map-set user-streak caller
-                        { streak: u0, last-checkin: current-block, total-checkins: (+ cur-total u1) }
-                    )
                     (try! (ft-mint? DROP REWARD-AMOUNT caller))
-                    (print { event: "reward-claimed", user: caller, amount: REWARD-AMOUNT, block: current-block })
+                    (print { event: "reward-claimed", user: caller, amount: REWARD-AMOUNT, streak: new-streak, block: current-block })
                     (ok { action: "claimed", streak: u0, reward: REWARD-AMOUNT })
                 )
                 (begin
