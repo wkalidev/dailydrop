@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: "DailyDrop",
     images: [
       {
-        url: `${APP_URL}/og-image.png`,
+        url: `${APP_URL}/og-image.svg`,
         width: 1200,
         height: 630,
         alt: "DailyDrop — Check in daily, earn DROP tokens",
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "DailyDrop 🔥",
     description: "Check in daily on-chain. 7-day streak = 10 DROP tokens.",
-    images: [`${APP_URL}/og-image.png`],
+    images: [`${APP_URL}/og-image.svg`],
   },
   other: {
     "base:app_id": "69e56bc887970a2e83bef402",
     "talentapp:project_verification": "0b22c6a1c2582dd366f212943bcf48eb1039804eb76152f98a8ec0c884ea0fe70edd9320cdfcc9c65a243808117acba320903f02f90b38521232f86c57d2d46d",
     "fc:frame": JSON.stringify({
       version: "next",
-      imageUrl: `${APP_URL}/og-image.png`,
+      imageUrl: `${APP_URL}/og-image.svg`,
       button: {
         title: "🔥 Check In",
         action: {
