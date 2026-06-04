@@ -1,0 +1,39 @@
+{
+  "name": "@dailydrop/shield",
+  "version": "1.0.0",
+  "description": "Proof of Presence verification SDK — verify real humans by their on-chain streak",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "celo",
+    "base",
+    "proof-of-presence",
+    "sybil-resistance",
+    "streak",
+    "dailydrop",
+    "web3",
+    "identity",
+    "human-verification",
+    "blockchain"
+  ],
+  "author": "wkalidev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wkalidev/dailydrop"
+  },
+  "homepage": "https://dailydrop-five.vercel.app",
+  "dependencies": {
+    "viem": "^2.0.0"
+  },
+  "peerDependencies": {
+    "viem": ">=2.0.0"
+  }
+}
