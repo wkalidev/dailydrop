@@ -1,25 +1,107 @@
 # DailyDrop 🔥
 
-> Check in daily on-chain. 7-day streak = 10 DROP tokens.
+> Check in daily on-chain. 7-day streak = 10 DROP tokens + G$ rewards.
 
-**Compatible MiniPay ✅ | Compatible Farcaster Frames ✅ | Celo + Base ✅**
-
-## Démo
-
-🔗 App live : https://dailydrop-five.vercel.app
-🐙 GitHub : https://github.com/wkalidev/dailydrop
-🪙 Contrat Celo : `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b`
-🪙 Contrat Base : `0x974fB504172f2aABbecc698Ebf137202a5E4e495`
+**Compatible MiniPay ✅ | Compatible Farcaster ✅ | Celo + Base ✅ | Proof of Presence ✅**
 
 ---
 
-## Comment ça marche
+## Live
 
-1. Connecte ton wallet (MetaMask, MiniPay, Rabby…)
-2. Clique **Check-in** une fois par jour
-3. Construis un streak de 7 jours d'affilée
-4. Claim **10 DROP tokens** 🎁
-5. Recommence !
+🔗 App : https://dailydrop-five.vercel.app
+🛡️ Shield API : https://dailydrop-five.vercel.app/api/verify
+📦 SDK : `npm i @dailydrop/shield`
+🐙 GitHub : https://github.com/wkalidev/dailydrop
+
+---
+
+## What is DailyDrop?
+
+DailyDrop is **two things at once**:
+
+1. **A daily check-in app** — users check in on-chain every day, build a 7-day streak, and earn DROP tokens + G$ rewards.
+
+2. **A Proof of Presence Protocol** — `DailyDropShield` is an open infrastructure layer that any project can use to verify real humans by their on-chain streak. No KYC. No passport scan. Just behavioral proof.
+
+> A streak on-chain can't be faked retroactively. If a wallet showed up every day, it's a real human.
+
+---
+
+## How it works
+
+1. Connect wallet (MiniPay, MetaMask, RainbowKit…)
+2. Click **Check-in** once per day (1 TX on-chain)
+3. Build a 7-day consecutive streak
+4. Claim **10 DROP tokens** 🎁 + **G$ bonus** 🌱
+5. Repeat!
+
+---
+
+## 🛡️ DailyDropShield — Proof of Presence
+
+Any project can verify real humans using the free public API or npm SDK:
+
+### REST API (free, no auth)
+
+```bash
+GET https://dailydrop-five.vercel.app/api/verify?address=0xABC&minStreak=7
+```
+
+```json
+{
+  "address": "0xABC...",
+  "passed": true,
+  "streak": { "current": 12, "celo": 12, "base": 0 },
+  "badges": { "level": 1, "label": "🥉 Weekly", "weekly": true },
+  "shield": "0x24eFf9bdE979D6dccC869178F353D663bC8A6983"
+}
+```
+
+### npm SDK
+
+```bash
+npm install @dailydrop/shield
+```
+
+```typescript
+import DailyDropShield from "@dailydrop/shield"
+
+const shield = new DailyDropShield()
+const isHuman = await shield.isHuman("0xABC...", 7)
+const streak  = await shield.getStreak("0xABC...")
+const badge   = await shield.getBadge("0xABC...")
+```
+
+### Use Cases
+
+| Use Case | minStreak |
+|----------|-----------|
+| Airdrop sybil filter | 7 |
+| DAO voting weight | 30 |
+| NFT allowlist | 7 |
+| DeFi APY boost | 14 |
+
+---
+
+## Smart Contracts
+
+| Contract | Network | Address |
+|----------|---------|---------|
+| DailyDrop | Celo Mainnet | `0x63596cf6601ec2240A295ff2840C8d6653252AE6` |
+| DailyDrop | Base Mainnet | `0x974fB504172f2aABbecc698Ebf137202a5E4e495` |
+| DailyDropShield | Celo Mainnet | `0x24eFf9bdE979D6dccC869178F353D663bC8A6983` |
+
+---
+
+## G$ Integration (GoodBuilders Season 4)
+
+DailyDrop integrates **GoodDollar G$** as bonus rewards:
+
+- Streak 7 days → **100 G$** bonus
+- Streak 30 days → **500 G$** bonus
+- Streak 100 days → **2000 G$** bonus
+
+G$ token on Celo: `0x62B8B11039FcfE5aB0C56E502b1C372A3D2a9C7A`
 
 ---
 
@@ -27,188 +109,72 @@
 
 | Layer | Tech |
 |---|---|
-| Smart Contract | Solidity 0.8.20, OpenZeppelin ERC20 |
+| Smart Contracts | Solidity 0.8.20, OpenZeppelin ERC20 |
 | Frontend | Next.js 14, TypeScript, Tailwind CSS |
 | Web3 | wagmi v2, viem, RainbowKit |
-| Frames | Farcaster Frames vNext |
-| Déploiement | Vercel (frontend), Hardhat (contracts) |
-| Chains | Celo Mainnet (42220) + Base Mainnet (8453) |
+| Shield SDK | TypeScript, viem |
+| Chains | Celo Mainnet + Base Mainnet |
+| Deploy | Vercel (frontend), Hardhat (contracts) |
 
 ---
 
 ## Installation
 
-### 1. Cloner le repo
-
 ```bash
 git clone https://github.com/wkalidev/dailydrop
 cd dailydrop
-```
-
-### 2. Installer les dépendances des contrats
-
-```bash
 npm install
+cd frontend && npm install
 ```
 
-### 3. Installer les dépendances du frontend
+### Environment Variables
 
-```bash
-cd frontend
-npm install
-cd ..
+```env
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=...
+NEXT_PUBLIC_CDP_PROJECT_ID=...
+NEXT_PUBLIC_CELO_CONTRACT_ADDRESS=0x63596cf6601ec2240A295ff2840C8d6653252AE6
+NEXT_PUBLIC_BASE_CONTRACT_ADDRESS=0x974fB504172f2aABbecc698Ebf137202a5E4e495
+NEXT_PUBLIC_SHIELD_ADDRESS=0x24eFf9bdE979D6dccC869178F353D663bC8A6983
 ```
-
-### 4. Configurer les variables d'environnement
-
-```bash
-cp frontend/.env.example frontend/.env.local
-```
-
-Remplis `.env.local` avec :
-- `PRIVATE_KEY` : ta clé privée (pour déployer)
-- `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` : obtenir sur https://cloud.walletconnect.com
-- `NEXT_PUBLIC_CDP_PROJECT_ID` : obtenir sur https://portal.cdp.coinbase.com
 
 ---
 
-## Déploiement des contrats
-
-### Compiler
+## Deploy Contracts
 
 ```bash
-npm run compile
+npm run deploy:celo   # Deploy DailyDrop + DailyDropShield on Celo
+npm run deploy:base   # Deploy DailyDrop on Base
 ```
-
-### Déployer sur Celo Mainnet ✅
-
-```bash
-npm run deploy:celo
-```
-
-### Déployer sur Base Mainnet ✅
-
-```bash
-npm run deploy:base
-```
-
-> Les adresses sont automatiquement sauvegardées dans `deployments.json` et `frontend/.env.local`
-
----
-
-## Lancer le frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-Ouvre http://localhost:3000
-
----
-
-## Déployer sur Vercel
-
-1. Push sur GitHub
-2. Connecte à Vercel : https://vercel.com/new
-3. Sélectionne le repo `wkalidev/dailydrop`
-4. Root Directory → `frontend`
-5. Configure les variables d'environnement :
-
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Reown/WalletConnect project ID |
-| `NEXT_PUBLIC_CDP_PROJECT_ID` | Coinbase Developer Platform project ID |
-| `NEXT_PUBLIC_CELO_CONTRACT_ADDRESS` | Adresse contrat Celo mainnet |
-| `NEXT_PUBLIC_BASE_CONTRACT_ADDRESS` | Adresse contrat Base mainnet |
-| `NEXT_PUBLIC_APP_URL` | URL de l'app déployée |
-
-6. Deploy !
 
 ---
 
 ## MiniPay
 
-L'app détecte automatiquement MiniPay via `window.ethereum.isMiniPay`.
-Si MiniPay est détecté :
-- Connexion wallet automatique
-- Badge "✅ MiniPay" affiché
-- Interface optimisée mobile
+Auto-detects MiniPay via `window.ethereum.isMiniPay`:
+- Auto wallet connection
+- Gas fees in cUSD
+- Mobile-optimized UI
 
-Pour tester dans MiniPay :
-1. Télécharge MiniPay sur Android
-2. Active le mode développeur dans les paramètres
-3. Entre l'URL : https://dailydrop-five.vercel.app
+Test: https://dailydrop-five.vercel.app
 
 ---
 
-## Farcaster Frame
+## Proof of Ship — Celo
 
-Le Frame est disponible à `/api/frame`.
-Il permet aux utilisateurs Farcaster de voir leur streak et d'ouvrir l'app directement depuis Warpcast.
-
-Pour tester : https://warpcast.com/~/developers/frames
-
-URL du frame : https://dailydrop-five.vercel.app/api/frame
-
----
-
-## Structure du projet
-
-```
-dailydrop/
-├── contracts/
-│   └── DailyDrop.sol          # Smart contract ERC20 + check-in
-├── deploy/
-│   └── deploy.ts              # Script de déploiement
-├── hardhat.config.ts          # Config Hardhat (Celo + Base)
-├── package.json               # Dépendances contrats
-├── deployments.json           # Adresses déployées (auto-généré)
-└── frontend/
-    ├── app/
-    │   ├── page.tsx           # Page principale
-    │   ├── layout.tsx         # Layout + metadata Farcaster
-    │   ├── providers.tsx      # wagmi + RainbowKit providers
-    │   ├── globals.css        # Design system complet
-    │   └── api/frame/
-    │       └── route.ts       # Farcaster Frame endpoint
-    ├── components/
-    │   ├── CheckInButton.tsx  # Bouton check-in + claim
-    │   ├── StreakDisplay.tsx  # Affichage streak + stats
-    │   └── MiniPayDetector.tsx # Auto-connect MiniPay
-    ├── lib/
-    │   ├── wagmi.ts           # Config wagmi
-    │   └── contract.ts        # ABI + adresses
-    └── .env.example           # Variables d'environnement
-```
+- ✅ DailyDrop deployed Celo + Base mainnet
+- ✅ DailyDropShield deployed Celo mainnet
+- ✅ Public REST API live
+- ✅ `@dailydrop/shield` published on npm
+- ✅ MiniPay compatible
+- ✅ Farcaster Mini App
+- ✅ G$ integration (GoodBuilders Season 4)
 
 ---
 
-## Contrats déployés
+## License
 
-| Network | Adresse |
-|---|---|
-| Celo Mainnet | `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b` |
-| Base Mainnet | `0x974fB504172f2aABbecc698Ebf137202a5E4e495` |
-
-Vérifier sur :
-- Celo : https://celoscan.io/address/0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b
-- Base : https://basescan.org/address/0x974fB504172f2aABbecc698Ebf137202a5E4e495
+MIT © 2026 [@wkalidev](https://github.com/wkalidev)
 
 ---
 
-## Proof of Ship — Celo (Avril 2026)
-
-Ce projet participe au programme **Celo Proof of Ship**.
-
-- ✅ Build for MiniPay : hook `isMiniPay` détecté, connexion automatique
-- ✅ Deploy on Celo Mainnet : contrat `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b`
-- ✅ Deploy on Base Mainnet : contrat `0x974fB504172f2aABbecc698Ebf137202a5E4e495`
-- ✅ App live : https://dailydrop-five.vercel.app
-- ✅ Farcaster Frame : https://dailydrop-five.vercel.app/api/frame
-
----
-
-## Licence
-
-MIT
+**Built for the 1.4 billion unbanked · Powered by Celo · Proof of Presence Protocol**
