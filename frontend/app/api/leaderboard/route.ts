@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 const CELO_CONTRACT = process.env.NEXT_PUBLIC_CELO_CONTRACT_ADDRESS || "0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b";
 const BASE_CONTRACT  = process.env.NEXT_PUBLIC_BASE_CONTRACT_ADDRESS  || "0x974fB504172f2aABbecc698Ebf137202a5E4e495";
 
