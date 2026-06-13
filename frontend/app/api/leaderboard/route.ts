@@ -55,8 +55,10 @@ export async function GET() {
 
     const combined = [...fromCelo, ...fromBase];
     if (combined.length > 0) {
+      const celoAddrs = [...new Set(fromCelo)];
+      const baseAddrs = [...new Set(fromBase)];
       const merged = [...new Set([...KNOWN_ADDRESSES, ...combined])].slice(0, 200);
-      return NextResponse.json({ addresses: merged, source: "api" });
+      return NextResponse.json({ addresses: merged, celoAddresses: celoAddrs, baseAddresses: baseAddrs, source: "api" });
     }
   } catch (err) {
     console.error("Leaderboard fetch failed:", err);

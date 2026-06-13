@@ -21,6 +21,9 @@ export default function Leaderboard() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState("");
   const [source, setSource] = useState<string>("fallback");
+  const [filter, setFilter] = useState<"all" | "celo" | "base">("all");
+  const [celoSet, setCeloSet] = useState<Set<string>>(new Set());
+  const [baseSet, setBaseSet] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchLeaders = async () => {
@@ -35,6 +38,8 @@ export default function Leaderboard() {
             addresses = json.addresses;
             setSource(json.source || "api");
           }
+          if (json.celoAddresses) setCeloSet(new Set((json.celoAddresses as string[]).map((a: string) => a.toLowerCase())));
+          if (json.baseAddresses) setBaseSet(new Set((json.baseAddresses as string[]).map((a: string) => a.toLowerCase())));
         }
       } catch {
         // API unavailable — show empty state
@@ -80,6 +85,12 @@ export default function Leaderboard() {
   const rankEmoji = (i: number) =>
     i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
 
+  const filteredLeaders = leaders.filter(l => {
+    if (filter === "celo") return celoSet.has(l.address.toLowerCase());
+    if (filter === "base") return baseSet.has(l.address.toLowerCase());
+    return true;
+  });
+
   return (
     <main className="app-container">
       <header className="app-header">
@@ -112,36 +123,62 @@ export default function Leaderboard() {
       </section>
 
       <div className="app-card" style={{ padding: "8px 0", gap: 0 }}>
+        {/* Chain filters */}
+        <div className="lb-filters">
+          {(["all", "celo", "base"] as const).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`lb-filter-btn ${filter === f ? "active" : ""}`}
+            >
+              {f === "all" ? "All" : f === "celo" ? "🟡 Celo" : "🔵 Base"}
+            </button>
+          ))}
+        </div>
+
         {loading ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-dim)" }}>
             <span className="spinner" style={{ width: 24, height: 24, borderWidth: 3, display: "inline-block" }} />
           </div>
-        ) : leaders.length === 0 ? (
+        ) : filteredLeaders.length === 0 ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-dim)" }}>
-            No check-ins yet. Be the first!
+            {leaders.length === 0 ? "No check-ins yet. Be the first!" : "No wallets found for this filter."}
           </div>
         ) : (
-          leaders.map((entry, i) => (
-            <div
-              key={entry.address}
-              className="leaderboard-row"
-              style={{
-                background: entry.address.toLowerCase() === address?.toLowerCase()
-                  ? "rgba(249,115,22,0.07)" : "transparent",
-                borderLeft: entry.address.toLowerCase() === address?.toLowerCase()
-                  ? "3px solid #f97316" : "3px solid transparent",
-              }}
-            >
-              <span className="lb-rank">{rankEmoji(i)}</span>
-              <span className="lb-address">
-                {entry.address.toLowerCase() === address?.toLowerCase()
-                  ? "You 👋"
-                  : shortAddress(entry.address)}
-              </span>
-              <span className="lb-streak">🔥 {entry.streak}</span>
-              <span className="lb-checkins">{entry.totalCheckIns} check-ins</span>
-            </div>
-          ))
+          filteredLeaders.map((entry, i) => {
+            const isYou = !!address && entry.address.toLowerCase() === address.toLowerCase();
+            const isOnCelo = celoSet.has(entry.address.toLowerCase());
+            const isOnBase = baseSet.has(entry.address.toLowerCase());
+            const explorerUrl = isOnBase
+              ? `https://basescan.org/address/${entry.address}`
+              : `https://celoscan.io/address/${entry.address}`;
+            const chainLabel = isOnCelo && isOnBase ? "both" : isOnCelo ? "celo" : "base";
+
+            return (
+              <div
+                key={entry.address}
+                className={`leaderboard-row ${isYou ? "lb-row-you" : ""}`}
+              >
+                <span className="lb-rank">{rankEmoji(i)}</span>
+                <span className="lb-address">
+                  {isYou && <span className="lb-you-badge">YOU</span>}
+                  <a
+                    href={explorerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lb-address-link"
+                  >
+                    {shortAddress(entry.address)}
+                  </a>
+                </span>
+                <span className={`lb-chain-badge ${chainLabel}`}>
+                  {chainLabel === "both" ? "CELO+BASE" : chainLabel.toUpperCase()}
+                </span>
+                <span className="lb-streak">🔥 {entry.streak}</span>
+                <span className="lb-checkins">{entry.totalCheckIns} check-ins</span>
+              </div>
+            );
+          })
         )}
       </div>
 
