@@ -10,14 +10,15 @@ const BASE_CONTRACT  = process.env.NEXT_PUBLIC_BASE_CONTRACT_ADDRESS  || "0x974f
 
 export async function GET() {
   try {
+    const apiKey = process.env.CELOSCAN_API_KEY || process.env.BASESCAN_API_KEY || process.env.ETHERSCAN_V2_API_KEY || "";
     const [celoRes, baseRes] = await Promise.allSettled([
       fetch(
-        `https://api.celoscan.io/api?module=account&action=txlist&address=${CELO_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${process.env.CELOSCAN_API_KEY || ""}`,
-        { next: { revalidate: 300 } }
+        `https://api.etherscan.io/v2/api?chainid=42220&module=account&action=txlist&address=${CELO_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${apiKey}`,
+        { cache: "no-store" }
       ),
       fetch(
-        `https://api.basescan.org/api?module=account&action=txlist&address=${BASE_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${process.env.BASESCAN_API_KEY || ""}`,
-        { next: { revalidate: 300 } }
+        `https://api.etherscan.io/v2/api?chainid=8453&module=account&action=txlist&address=${BASE_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${apiKey}`,
+        { cache: "no-store" }
       ),
     ]);
 
