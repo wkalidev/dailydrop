@@ -21,9 +21,14 @@ contract DailyDrop is ERC20, Ownable {
 
     mapping(address => UserData) private userData;
 
+    // Cap on owner-minted initial supply — Solidity 0.8.20 protects all arithmetic from overflow natively
+    uint256 public constant MAX_INITIAL_SUPPLY = 1_000_000 * 10**18; // 1M DROP max
+    uint256 public initialMinted;
+
     event CheckIn(address indexed user, uint256 streak, uint256 timestamp);
     event RewardClaimed(address indexed user, uint256 amount);
     event StreakReset(address indexed user);
+    event MintInitial(address indexed to, uint256 amount);
 
     constructor() ERC20("DailyDrop", "DROP") Ownable(msg.sender) {}
 
@@ -55,6 +60,8 @@ contract DailyDrop is ERC20, Ownable {
 
     /**
      * @notice Claim 10 DROP si streak >= 7. Remet le streak à 0.
+     * @dev No reentrancy risk: _mint() does not call external contracts.
+     *      CHECKIN_INTERVAL = 86400s; block.timestamp drift from miners is at most ~15s — acceptable.
      */
     function claimReward() external {
         UserData storage user = userData[msg.sender];
@@ -62,6 +69,7 @@ contract DailyDrop is ERC20, Ownable {
         require(user.streak >= STREAK_TARGET, "DailyDrop: streak not reached");
 
         user.streak = 0;
+        emit StreakReset(msg.sender);
         _mint(msg.sender, REWARD_AMOUNT);
 
         emit RewardClaimed(msg.sender, REWARD_AMOUNT);
@@ -109,6 +117,9 @@ contract DailyDrop is ERC20, Ownable {
      * @notice Mint de tokens DROP par l'owner (pour liquidity initiale).
      */
     function mintInitial(address to, uint256 amount) external onlyOwner {
+        require(initialMinted + amount <= MAX_INITIAL_SUPPLY, "DailyDrop: initial supply cap reached");
+        initialMinted += amount;
         _mint(to, amount);
+        emit MintInitial(to, amount);
     }
 }

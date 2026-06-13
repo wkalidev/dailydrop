@@ -12,16 +12,6 @@ interface LeaderEntry {
   totalCheckIns: number;
 }
 
-const KNOWN_ADDRESSES: `0x${string}`[] = [
-  "0x6C98AB949Be4CDe57Db7A5286f27959Df1eD3937",
-  "0x47825De02131f9d1b11718FD040A6FA4b28c5fEc",
-  "0xE3143a87365D680D1eB19379F00C9ED0f416EC5d",
-  "0x0A2dC3204E8F3b6b2a72BB97303Ae8C879E287bC",
-  "0xcF314d504C5FCc04fC85fc567878C36c16B16B68",
-  "0x97Ce1AaECd6e434C71B540Dd089eeCf735Cb2fe0",
-  "0xDEAcDe6eC27Fd0cD972c1232C4f0d4171dda2357",
-];
-
 export default function Leaderboard() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -30,23 +20,24 @@ export default function Leaderboard() {
   const [leaders, setLeaders] = useState<LeaderEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState("");
+  const [source, setSource] = useState<string>("fallback");
 
   useEffect(() => {
     const fetchLeaders = async () => {
       if (!publicClient || !contractAddress) return;
 
-      // Essaie l'API, sinon utilise les adresses connues directement
-      let addresses: `0x${string}`[] = KNOWN_ADDRESSES;
+      let addresses: `0x${string}`[] = [];
       try {
         const res = await fetch("/api/leaderboard");
         if (res.ok) {
           const json = await res.json();
           if (json.addresses?.length > 0) {
             addresses = json.addresses;
+            setSource(json.source || "api");
           }
         }
       } catch {
-        // Utilise KNOWN_ADDRESSES
+        // API unavailable — show empty state
       }
 
       // Lit les données on-chain pour chaque adresse
@@ -157,6 +148,12 @@ export default function Leaderboard() {
       {lastUpdated && (
         <p style={{ textAlign: "center", fontSize: 11, color: "var(--text-muted)" }}>
           Updated at {lastUpdated} · refreshes every 5 min
+        </p>
+      )}
+
+      {leaders.length > 0 && (
+        <p style={{ fontSize: 11, color: "var(--text-muted)", textAlign: "center" }}>
+          {leaders.length} wallets · {source === "api" ? "Live from chain" : "Cached data"}
         </p>
       )}
 

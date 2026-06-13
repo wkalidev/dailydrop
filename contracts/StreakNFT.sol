@@ -42,6 +42,7 @@ contract StreakNFT is ERC721, Ownable {
     }
 
     function mintOrUpdate(address user, uint256 streak, string calldata chain) external onlyMaster {
+        require(user != address(0), "StreakNFT: zero address");
         uint256 tokenId = tokenOfOwner[user];
         if (tokenId == 0) {
             tokenId = _nextTokenId++;
@@ -193,5 +194,14 @@ contract StreakNFT is ERC721, Ownable {
         address from = _ownerOf(tokenId);
         require(from == address(0), "StreakNFT: soulbound - non transferable");
         return super._update(to, tokenId, auth);
+    }
+
+    // Explicitly block transfer-related approval methods for completeness
+    function approve(address, uint256) public pure override {
+        revert("StreakNFT: soulbound");
+    }
+
+    function setApprovalForAll(address, bool) public pure override {
+        revert("StreakNFT: soulbound");
     }
 }

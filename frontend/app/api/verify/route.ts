@@ -209,9 +209,12 @@ export async function GET(req: NextRequest) {
         headers: {
           // Cache 60s — streaks change max once per day
           "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
-          // CORS — any project can call this API
+          // CORS — any project can call this API (read-only public data)
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET",
+          // Security hardening
+          "X-Content-Type-Options": "nosniff",
+          "X-Frame-Options": "DENY",
         },
       }
     );

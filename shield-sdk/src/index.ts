@@ -1,4 +1,4 @@
-import { createPublicClient, http, PublicClient } from "viem";
+import { createPublicClient, http, type PublicClient } from "viem";
 import { celo, base } from "viem/chains";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -32,6 +32,7 @@ export interface VerifyResult {
     celoscan: string;
     basescan: string;
   };
+  error?: string;
 }
 
 export interface ShieldOptions {
@@ -39,10 +40,12 @@ export interface ShieldOptions {
   onChain?: boolean;
   celoRpc?: string;
   baseRpc?: string;
+  timeout?: number; // ms, default 10000
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
+// These addresses are immutable and correspond to the mainnet deployment
 const DEFAULT_API_URL = "https://dailydrop-five.vercel.app";
 const CELO_DAILYDROP  = "0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b" as `0x${string}`;
 const BASE_DAILYDROP  = "0x974fB504172f2aABbecc698Ebf137202a5E4e495" as `0x${string}`;
@@ -70,14 +73,14 @@ const DAILYDROP_ABI = [
 export class DailyDropShield {
   private apiUrl: string;
   private onChain: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private timeout: number;
   private celoClient: PublicClient | null = null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private baseClient: PublicClient | null = null;
 
   constructor(options: ShieldOptions = {}) {
     this.apiUrl  = options.apiUrl  ?? DEFAULT_API_URL;
     this.onChain = options.onChain ?? false;
+    this.timeout = options.timeout ?? 10000;
 
     if (this.onChain) {
       this.celoClient = createPublicClient({
@@ -92,6 +95,32 @@ export class DailyDropShield {
     }
   }
 
+  // ─── Address validation ──────────────────────────────────────────────────────
+
+  private _validateAddress(address: string): void {
+    if (!/^0x[0-9a-fA-F]{40}$/.test(address)) {
+      throw new Error(`DailyDropShield: invalid Ethereum address "${address}"`);
+    }
+    if (address === "0x0000000000000000000000000000000000000000") {
+      throw new Error("DailyDropShield: zero address not allowed");
+    }
+  }
+
+  // ─── Fetch with retry ────────────────────────────────────────────────────────
+
+  private async _fetchWithRetry(url: string, retries = 1): Promise<Response> {
+    try {
+      return await globalThis.fetch(url, {
+        signal: AbortSignal.timeout(this.timeout),
+      });
+    } catch (err) {
+      if (retries > 0) return this._fetchWithRetry(url, retries - 1);
+      throw err;
+    }
+  }
+
+  // ─── Public API ──────────────────────────────────────────────────────────────
+
   /**
    * Verify if an address has the required streak.
    * @example
@@ -100,8 +129,14 @@ export class DailyDropShield {
    * if (result.passed) console.log("✅ Real human!")
    */
   async verify(address: string, minStreak = 7): Promise<VerifyResult> {
+    this._validateAddress(address);
     if (this.onChain) return this._verifyOnChain(address, minStreak);
     return this._verifyApi(address, minStreak);
+  }
+
+  /** Alias for verify(address, 1) — returns full profile data */
+  async getProfile(address: string): Promise<VerifyResult> {
+    return this.verify(address, 1);
   }
 
   /** Quick boolean check */
@@ -122,14 +157,45 @@ export class DailyDropShield {
     return result.streak.current;
   }
 
+  /**
+   * Verify multiple addresses in parallel — useful for airdrop filtering.
+   * Limited to 100 addresses per call.
+   */
+  async verifyBatch(
+    addresses: string[],
+    minStreak = 7
+  ): Promise<Record<string, VerifyResult>> {
+    if (addresses.length > 100) {
+      throw new Error("DailyDropShield: verifyBatch limited to 100 addresses");
+    }
+    const results = await Promise.allSettled(
+      addresses.map((addr) => this.verify(addr, minStreak))
+    );
+    return Object.fromEntries(
+      addresses.map((addr, i) => [
+        addr,
+        results[i].status === "fulfilled"
+          ? results[i].value
+          : {
+              address: addr,
+              passed: false,
+              error: (results[i] as PromiseRejectedResult).reason?.message,
+            } as VerifyResult,
+      ])
+    );
+  }
+
   // ─── Private ─────────────────────────────────────────────────────────────────
 
   private async _verifyApi(address: string, minStreak: number): Promise<VerifyResult> {
     const url = `${this.apiUrl}/api/verify?address=${address}&minStreak=${minStreak}`;
-    // Use global fetch (Node 18+ / browser)
-    const res = await globalThis.fetch(url);
+    const res = await this._fetchWithRetry(url);
     if (!res.ok) throw new Error(`DailyDropShield API error: ${res.status}`);
-    return res.json() as Promise<VerifyResult>;
+    const json = await res.json();
+    if (!json || typeof json.passed !== "boolean") {
+      throw new Error("DailyDropShield: invalid API response shape");
+    }
+    return json as VerifyResult;
   }
 
   private async _verifyOnChain(address: string, minStreak: number): Promise<VerifyResult> {
@@ -140,15 +206,13 @@ export class DailyDropShield {
     const userAddress = address as `0x${string}`;
 
     const [celoResult, baseResult] = await Promise.allSettled([
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this.celoClient as any).readContract({
+      (this.celoClient as unknown as { readContract: (args: unknown) => Promise<unknown> }).readContract({
         address: CELO_DAILYDROP,
         abi: DAILYDROP_ABI,
         functionName: "getUserData",
         args: [userAddress],
       }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this.baseClient as any).readContract({
+      (this.baseClient as unknown as { readContract: (args: unknown) => Promise<unknown> }).readContract({
         address: BASE_DAILYDROP,
         abi: DAILYDROP_ABI,
         functionName: "getUserData",
@@ -156,10 +220,8 @@ export class DailyDropShield {
       }),
     ]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const celoData = celoResult.status === "fulfilled" ? (celoResult.value as any) : null;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const baseData = baseResult.status === "fulfilled" ? (baseResult.value as any) : null;
+    const celoData = celoResult.status === "fulfilled" ? (celoResult.value as readonly [bigint, bigint, bigint, boolean, boolean, bigint]) : null;
+    const baseData = baseResult.status === "fulfilled" ? (baseResult.value as readonly [bigint, bigint, bigint, boolean, boolean, bigint]) : null;
 
     const celoStreak = celoData ? Number(celoData[0]) : 0;
     const baseStreak = baseData ? Number(baseData[0]) : 0;

@@ -171,6 +171,34 @@ Test: https://dailydrop-five.vercel.app
 
 ---
 
+## Advanced Architecture
+
+### StreakMaster (Base)
+
+Cross-chain source of truth. Receives check-ins from Celo, Base, and Stacks via authorized relayers. Maintains an on-chain leaderboard (top 10), streak tiers, and triggers rewards.
+
+**Address**: [pending deployment — see `NEXT_PUBLIC_STREAK_MASTER_ADDRESS`]
+
+### DailyDropShield (Celo + Base)
+
+Proof of Presence verification layer. Any project can call `verify(address, minStreak)` to check if an address is an active human. Free. No KYC.
+
+**REST API**: `GET /api/verify?address=0x...&minStreak=7`
+
+> Note: `verify()` is `nonpayable` (not `view`) because it caches results on-chain. Use `verifyView()` for gas-free reads.
+
+### StreakNFT (Base)
+
+Soulbound ERC-721 NFT with 100% on-chain SVG metadata. Automatically updates on each check-in. Non-transferable.
+
+### Relayer
+
+Next.js API route (`/api/relayer`) that receives check-in notifications and calls `StreakMaster.updateStreak()` on Base. Requires `RELAYER_SECRET` for authentication and `RELAYER_PRIVATE_KEY` for signing.
+
+> The Farcaster Frame (`/api/frame`) uses `untrustedData` — Farcaster signature verification is not yet implemented. See `// TODO` comment in the route for production hardening.
+
+---
+
 ## License
 
 MIT © 2026 [@wkalidev](https://github.com/wkalidev)

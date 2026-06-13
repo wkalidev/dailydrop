@@ -21,6 +21,7 @@ interface IDailyDrop {
 contract StreakMaster is Ownable, ReentrancyGuard {
 
     // ─── Constants ────────────────────────────────────────────────────────────
+    // 20h (not 24h like DailyDrop.sol) — intentional: gives users a 4h window drift tolerance
     uint256 public constant CHECKIN_INTERVAL  = 20 hours;
     uint256 public constant STREAK_RESET_TIME = 48 hours;
     uint256 public constant STREAK_TARGET     = 7;
@@ -41,6 +42,7 @@ contract StreakMaster is Ownable, ReentrancyGuard {
     mapping(address => bool)      public  relayers;
     mapping(string  => address)   public  dropContracts;
     address public streakNFT;
+    // usedTxProofs grows unboundedly by design — replay prevention requires permanent storage of used proofs
     mapping(bytes32 => bool) public usedTxProofs;
 
     // ─── Cached Calculations - Daily Aggregates ───────────────────────────────
@@ -177,7 +179,9 @@ contract StreakMaster is Ownable, ReentrancyGuard {
 
         // Store old streak for tier checking
         uint256 oldStreak = u.streak;
-        
+        // Capture before totalCheckIns increment so isFirstCheckIn is true only for a wallet's very first check-in ever
+        bool isFirstCheckIn = u.totalCheckIns == 0;
+
         // Update
         u.streak += 1;
         u.lastUpdate = now_;
@@ -202,7 +206,7 @@ contract StreakMaster is Ownable, ReentrancyGuard {
         emit StreakUpdated(user, u.streak, chain, now_);
 
         // Update daily aggregates
-        _updateDailyStats(user, day, !wasReset && oldStreak == 0);
+        _updateDailyStats(user, day, isFirstCheckIn);
         
         // Check and update tier achievements
         _checkTierAchievements(user, u.streak);
@@ -301,7 +305,7 @@ contract StreakMaster is Ownable, ReentrancyGuard {
             return; // No leaderboard update needed
         }
         
-        // Sort leaderboard (simple bubble sort for small array)
+        // O(n²) bubble sort on a fixed-size 10-element array — gas is bounded (~450 SSTOREs worst case)
         for (uint i = 0; i < topStreaks.length - 1; i++) {
             for (uint j = i + 1; j < topStreaks.length; j++) {
                 if (topStreaks[i].streak < topStreaks[j].streak) {

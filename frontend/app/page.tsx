@@ -35,7 +35,7 @@ export default function Home() {
     initFarcaster();
   }, []);
 
-  const { data: userData, refetch: refetchUser } = useReadContract({
+  const { data: userData, refetch: refetchUser, isPending: isUserPending } = useReadContract({
     address: contractAddress,
     abi: DAILYDROP_ABI,
     functionName: "getUserData",
@@ -106,16 +106,24 @@ export default function Home() {
       {/* App principale */}
       {isConnected && !isWrongNetwork ? (
         <div className="app-card" key={refreshKey}>
-          <StreakDisplay
-            streak={streak}
-            totalCheckIns={totalCheckIns}
-            nextCheckIn={nextCheckIn}
-            canCheckIn={canCheckIn as boolean}
-            dropBalance={formattedBalance}
-          />
+          {isUserPending ? (
+            <div className="skeleton-row">
+              <div className="skeleton" style={{ width: 80, height: 56 }} />
+              <div className="skeleton" style={{ width: 200, height: 20 }} />
+            </div>
+          ) : (
+            <StreakDisplay
+              streak={streak}
+              totalCheckIns={totalCheckIns}
+              nextCheckIn={nextCheckIn}
+              canCheckIn={canCheckIn as boolean}
+              dropBalance={formattedBalance}
+            />
+          )}
           <CheckInButton
             canCheckIn={canCheckIn as boolean}
             canClaim={canClaim as boolean}
+            streak={streak}
             onSuccess={handleSuccess}
           />
           <AddTokenButton />

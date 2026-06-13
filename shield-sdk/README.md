@@ -5,6 +5,15 @@
 [![npm](https://img.shields.io/npm/v/@dailydrop/shield)](https://www.npmjs.com/package/@dailydrop/shield)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+## What's new in v1.1.0
+
+- `verifyBatch()` — verify multiple addresses in parallel
+- `getProfile()` — alias for `verify(address, 1)` with full data
+- Automatic retry on network errors
+- Configurable timeout (`timeout` option)
+- Address validation before any network call
+- ESM/CJS dual export
+
 ## Why?
 
 Airdrops get sybil-attacked. DAOs get fake votes. NFT mints get botted.
@@ -42,7 +51,30 @@ const streak = await shield.getStreak("0xABC...")
 
 // Get badge level (0=none, 1=weekly, 2=monthly, 3=century)
 const badge = await shield.getBadge("0xABC...")
+
+// Verify multiple wallets at once (airdrop filtering)
+const results = await shield.verifyBatch([
+  "0xABC...",
+  "0xDEF...",
+  "0x123...",
+], 7)
+
+const eligible = Object.entries(results)
+  .filter(([, r]) => r.passed)
+  .map(([addr]) => addr)
+
+console.log(`${eligible.length} eligible wallets`)
 ```
+
+## Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `apiUrl` | string | `https://dailydrop-five.vercel.app` | Custom API endpoint |
+| `onChain` | boolean | `false` | Read directly from blockchain |
+| `celoRpc` | string | `https://forno.celo.org` | Custom Celo RPC |
+| `baseRpc` | string | `https://mainnet.base.org` | Custom Base RPC |
+| `timeout` | number | `10000` | Fetch timeout in ms |
 
 ## Response
 
@@ -83,6 +115,22 @@ const badge = await shield.getBadge("0xABC...")
 }
 ```
 
+## Error handling
+
+```typescript
+try {
+  const result = await shield.verify("0xABC...", 7)
+} catch (err) {
+  if (err.message.includes("invalid Ethereum address")) {
+    // Bad address format
+  } else if (err.message.includes("timeout")) {
+    // Network timeout — retry or use onChain: true
+  } else {
+    // API error
+  }
+}
+```
+
 ## Use Cases
 
 | Use Case | minStreak |
@@ -102,14 +150,6 @@ const shield = new DailyDropShield({ onChain: true })
 const result = await shield.verify("0xABC...", 7)
 ```
 
-## Contracts
-
-| Contract | Network | Address |
-|----------|---------|---------|
-| DailyDrop | Celo Mainnet | `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b` |
-| DailyDrop | Base Mainnet | `0x974fB504172f2aABbecc698Ebf137202a5E4e495` |
-| DailyDropShield | Celo Mainnet | `0x24eFf9bdE979D6dccC869178F353D663bC8A6983` |
-
 ## REST API
 
 Free public API — no auth required:
@@ -117,6 +157,14 @@ Free public API — no auth required:
 ```
 GET https://dailydrop-five.vercel.app/api/verify?address=0xABC&minStreak=7
 ```
+
+## Contracts
+
+| Contract | Network | Address |
+|----------|---------|---------|
+| DailyDrop | Celo Mainnet | `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b` |
+| DailyDrop | Base Mainnet | `0x974fB504172f2aABbecc698Ebf137202a5E4e495` |
+| DailyDropShield | Celo Mainnet | `0x24eFf9bdE979D6dccC869178F353D663bC8A6983` |
 
 ## License
 

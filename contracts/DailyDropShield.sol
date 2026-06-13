@@ -205,7 +205,9 @@ contract DailyDropShield is Ownable {
         dailyDropBase = IDailyDrop(_base);
     }
 
+    // Use .call instead of .transfer — .transfer is limited to 2300 gas, which can fail for multisig owners
     function withdraw() external onlyOwner {
-        payable(owner()).transfer(address(this).balance);
+        (bool ok, ) = payable(owner()).call{value: address(this).balance}("");
+        require(ok, "DailyDropShield: transfer failed");
     }
 }

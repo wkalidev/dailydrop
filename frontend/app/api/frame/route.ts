@@ -9,9 +9,9 @@ export async function GET() {
   <head>
     <meta property="og:title" content="DailyDrop 🔥" />
     <meta property="og:description" content="Check in daily on-chain. 7-day streak = 10 DROP tokens." />
-    <meta property="og:image" content="${APP_URL}/og-image.png" />
+    <meta property="og:image" content="${APP_URL}/og-image.svg" />
     <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="${APP_URL}/og-image.png" />
+    <meta property="fc:frame:image" content="${APP_URL}/og-image.svg" />
     <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
     <meta property="fc:frame:button:1" content="🔥 Check In" />
     <meta property="fc:frame:button:1:action" content="link" />
@@ -30,7 +30,8 @@ export async function GET() {
   });
 }
 
-// Frame action — POST (quand l'utilisateur clique "My Streak")
+// Frame action — POST (when user clicks "My Streak")
+// TODO: verify Farcaster frame signature for production (requires a Hub or Neynar API)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
