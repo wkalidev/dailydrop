@@ -10,6 +10,7 @@ import { MiniPayBadge, useMiniPay } from "../components/MiniPayDetector";
 import { DAILYDROP_ABI, CONTRACT_ADDRESSES } from "../lib/contract";
 import { AddTokenButton } from "../components/AddTokenButton";
 import InstallBanner from "../components/InstallBanner";
+import { FarcasterAutoConnect } from "../components/FarcasterAutoConnect";
 
 export default function Home() {
   const { address, isConnected } = useAccount();
@@ -26,23 +27,6 @@ export default function Home() {
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    const initFarcaster = async () => {
-      try {
-        const { sdk } = await import("@farcaster/frame-sdk");
-        const context = await sdk.context;
-        if (context?.client?.clientFid) {
-          await sdk.wallet.ethProvider.request({
-            method: "eth_requestAccounts",
-          });
-        }
-        await sdk.actions.ready();
-      } catch (err) {
-        console.log("Not in Farcaster context:", err);
-      }
-    };
-    initFarcaster();
-  }, []);
 
   const { data: userData, refetch: refetchUser, isPending: isUserPending } = useReadContract({
     address: contractAddress,
@@ -66,6 +50,10 @@ export default function Home() {
     setRefreshKey((k) => k + 1);
   }, [refetchUser, refetchBalance]);
 
+  const scrollTo = (sel: string) =>
+    (document.querySelector(sel) ?? document.querySelector(".app-card"))
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+
   const streak = userData ? Number(userData[0]) : 0;
   const totalCheckIns = userData ? Number(userData[2]) : 0;
   const canCheckIn = userData ? userData[3] : true;
@@ -77,6 +65,7 @@ export default function Home() {
 
   return (
     <main className="app-container">
+      <FarcasterAutoConnect />
       {/* Header */}
       <InstallBanner />
       <header className="app-header">
@@ -181,23 +170,23 @@ export default function Home() {
       <section className="how-it-works">
         <h2>How it works</h2>
         <div className="steps">
-          <div className="step">
+          <div className="step" role="button" onClick={() => scrollTo(isConnected ? ".app-card" : ".connect-prompt")}>
             <span className="step-num">1</span>
             <span>Connect wallet (MiniPay, MetaMask, etc.)</span>
           </div>
-          <div className="step">
+          <div className="step" role="button" onClick={() => scrollTo(".btn-checkin")}>
             <span className="step-num">2</span>
             <span>Click Check-in once a day</span>
           </div>
-          <div className="step">
+          <div className="step" role="button" onClick={() => scrollTo(".streak-container")}>
             <span className="step-num">3</span>
             <span>Build a 7-day streak</span>
           </div>
-          <div className="step">
+          <div className="step" role="button" onClick={() => scrollTo(".btn-claim")}>
             <span className="step-num">4</span>
             <span>Claim 10 DROP tokens 🎁</span>
           </div>
-          <div className="step">
+          <div className="step" role="button" onClick={() => window.open(`https://warpcast.com/~/compose?text=${encodeURIComponent("🔥 Checking in daily on DailyDrop to earn DROP tokens! Join me 👉 https://dailydrop-five.vercel.app")}`, "_blank")}>
             <span className="step-num">5</span>
             <span>Invite friends &amp; share your streak 🔗</span>
           </div>
