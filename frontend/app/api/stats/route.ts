@@ -60,7 +60,7 @@ export async function GET() {
       },
       {
         headers: {
-          "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
+          "Cache-Control": "public, s-maxage=0, max-age=60, stale-while-revalidate=120",
           "Access-Control-Allow-Origin": "*",
           "X-Content-Type-Options": "nosniff",
         },
