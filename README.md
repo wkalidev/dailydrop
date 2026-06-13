@@ -199,6 +199,52 @@ Next.js API route (`/api/relayer`) that receives check-in notifications and call
 
 ---
 
+## API Reference
+
+### `GET /api/agent?address=0x...`
+
+AI streak coach powered by Claude Haiku. Returns personalized motivation, action tip, and on-chain data for the given wallet. Falls back to deterministic heuristics if no API key is set.
+
+```json
+{
+  "streak": 5,
+  "totalCheckIns": 12,
+  "canCheckIn": true,
+  "canClaim": false,
+  "riskLevel": "low",
+  "message": "5 days in — 2 more to claim 10 DROP. You're almost there!",
+  "tip": "Check in now while you remember — consistency beats motivation.",
+  "aiPowered": true
+}
+```
+
+Environment variable: `ANTHROPIC_API_KEY` (optional — enables Claude Haiku coaching)
+
+---
+
+### `GET /api/stats`
+
+Protocol-wide analytics. Fetches transaction counts from Celoscan + Basescan. Cached 5 minutes.
+
+```json
+{
+  "totalCheckIns": 842,
+  "uniqueWallets": 301,
+  "celo": { "checkIns": 520, "wallets": 190 },
+  "base": { "checkIns": 322, "wallets": 145 }
+}
+```
+
+Environment variables: `CELOSCAN_API_KEY`, `BASESCAN_API_KEY`
+
+---
+
+### `GET /api/frame/image?address=0x...`
+
+Returns a 1200×630 SVG image for Farcaster Frames. Personalized when address is provided (shows live streak, color-coded by streak length). Generic brand image when no address given.
+
+---
+
 ## License
 
 MIT © 2026 [@wkalidev](https://github.com/wkalidev)

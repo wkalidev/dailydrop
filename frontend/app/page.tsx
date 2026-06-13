@@ -10,12 +10,27 @@ import { MiniPayBadge, useMiniPay } from "../components/MiniPayDetector";
 import { DAILYDROP_ABI, CONTRACT_ADDRESSES } from "../lib/contract";
 import { AddTokenButton } from "../components/AddTokenButton";
 
+interface ProtocolStats {
+  totalCheckIns: number;
+  uniqueWallets: number;
+  celo: { checkIns: number; wallets: number };
+  base: { checkIns: number; wallets: number };
+}
+
 export default function Home() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { isMiniPay } = useMiniPay();
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [refreshKey, setRefreshKey] = useState(0);
+  const [stats, setStats] = useState<ProtocolStats | null>(null);
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then((d) => { if (d.totalCheckIns !== undefined) setStats(d); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const initFarcaster = async () => {
@@ -96,7 +111,32 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Mauvais réseau */}
+      {/* Protocol stats bar */}
+      {stats && (
+        <div className="stats-bar">
+          <div className="stats-item">
+            <span className="stats-num">{stats.totalCheckIns.toLocaleString()}</span>
+            <span className="stats-label">Total Check-ins</span>
+          </div>
+          <div className="stats-divider" />
+          <div className="stats-item">
+            <span className="stats-num">{stats.uniqueWallets.toLocaleString()}</span>
+            <span className="stats-label">Unique Wallets</span>
+          </div>
+          <div className="stats-divider" />
+          <div className="stats-item">
+            <span className="stats-num">{stats.celo.checkIns.toLocaleString()}</span>
+            <span className="stats-label">Celo</span>
+          </div>
+          <div className="stats-divider" />
+          <div className="stats-item">
+            <span className="stats-num">{stats.base.checkIns.toLocaleString()}</span>
+            <span className="stats-label">Base</span>
+          </div>
+        </div>
+      )}
+
+      {/* Wrong network */}
       {isWrongNetwork && (
         <div className="alert-warning">
           ⚠️ Switch to Celo or Base to use DailyDrop.

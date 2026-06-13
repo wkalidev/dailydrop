@@ -13,6 +13,7 @@ export async function GET() {
     <meta property="fc:frame" content="vNext" />
     <meta property="fc:frame:image" content="${APP_URL}/og-image.svg" />
     <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
+    <meta property="fc:frame:input:text" content="Your wallet address (0x...)" />
     <meta property="fc:frame:button:1" content="🔥 Check In" />
     <meta property="fc:frame:button:1:action" content="link" />
     <meta property="fc:frame:button:1:target" content="${APP_URL}" />
@@ -21,7 +22,7 @@ export async function GET() {
     <meta property="fc:frame:post_url" content="${APP_URL}/api/frame" />
   </head>
   <body>
-    <p>DailyDrop — Check in daily on Celo & Base. Earn DROP tokens.</p>
+    <p>DailyDrop — Check in daily on Celo &amp; Base. Earn DROP tokens.</p>
   </body>
 </html>`;
 
@@ -30,15 +31,20 @@ export async function GET() {
   });
 }
 
-// Frame action — POST (when user clicks "My Streak")
+// Frame action — POST (user clicked "My Streak", optionally typed their address)
 // TODO: verify Farcaster frame signature for production (requires a Hub or Neynar API)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const fid = body?.untrustedData?.fid;
+    const fid          = body?.untrustedData?.fid;
+    const inputAddress = (body?.untrustedData?.inputText ?? "").trim();
 
-    // Image de réponse avec streak info
-    const responseImageUrl = `${APP_URL}/api/frame/image?fid=${fid || "0"}`;
+    // Use typed address if valid, otherwise fall back to fid-based generic image
+    const isValidAddr = /^0x[0-9a-fA-F]{40}$/.test(inputAddress);
+    const imageParam  = isValidAddr
+      ? `address=${encodeURIComponent(inputAddress)}`
+      : `fid=${fid || "0"}`;
+    const responseImageUrl = `${APP_URL}/api/frame/image?${imageParam}`;
 
     const html = `<!DOCTYPE html>
 <html>
