@@ -1,8 +1,16 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 import "./globals.css";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dailydrop-five.vercel.app";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "DailyDrop — Check in daily, earn DROP",
@@ -35,6 +43,11 @@ export const metadata: Metadata = {
     images: [`${APP_URL}/og-image.svg`],
   },
   other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-title": "DailyDrop",
+    "application-name": "DailyDrop",
     "base:app_id": "69e56bc887970a2e83bef402",
     "talentapp:project_verification": "0b22c6a1c2582dd366f212943bcf48eb1039804eb76152f98a8ec0c884ea0fe70edd9320cdfcc9c65a243808117acba320903f02f90b38521232f86c57d2d46d",
     "fc:frame": JSON.stringify({
@@ -62,6 +75,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <script dangerouslySetInnerHTML={{ __html: `
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+              navigator.serviceWorker.register('/sw.js').catch(function() {});
+            });
+          }
+        `}} />
         <Providers>{children}</Providers>
       </body>
     </html>
