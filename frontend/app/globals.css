@@ -497,9 +497,10 @@ body {
 
 /* ── Skeleton loader ── */
 .skeleton {
-  background: var(--surface2);
-  border-radius: var(--radius-sm);
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, var(--surface2) 25%, #222 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 6px;
 }
 
 .skeleton-row {
@@ -509,9 +510,17 @@ body {
   padding: 16px 0;
 }
 
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+.skeleton-card {
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ── Confetti ── */
@@ -593,4 +602,163 @@ body {
   height: 32px;
   background: var(--border);
   opacity: 0.5;
+}
+
+/* ── Protocol stats bar (global, page.tsx) — uses distinct class names to avoid conflicting with StreakDisplay .stats-row ── */
+.protocol-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.protocol-stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.protocol-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.protocol-stat-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── PWA safe area ── */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .app-container {
+    padding-bottom: max(60px, env(safe-area-inset-bottom));
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* ── PWA install banner ── */
+.pwa-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(249,115,22,0.08);
+  border: 1px solid rgba(249,115,22,0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  gap: 10px;
+}
+.pwa-banner-text { color: var(--text-dim); flex: 1; }
+.pwa-banner-btn {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Syne', sans-serif;
+}
+.pwa-banner-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+}
+
+/* ── Leaderboard filters ── */
+.lb-filters {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.lb-filter-btn {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Syne', sans-serif;
+  transition: all 0.15s;
+}
+.lb-filter-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Chain badge ── */
+.lb-chain-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+.lb-chain-badge.celo { background: rgba(252,180,40,0.1);  border-color: rgba(252,180,40,0.3);  color: #fcb428; }
+.lb-chain-badge.base { background: rgba(59,130,246,0.1);  border-color: rgba(59,130,246,0.3);  color: #60a5fa; }
+.lb-chain-badge.both { background: rgba(249,115,22,0.1);  border-color: rgba(249,115,22,0.3);  color: var(--accent); }
+
+/* ── Leaderboard you row ── */
+.lb-row-you {
+  background: rgba(249,115,22,0.05) !important;
+  border-left: 2px solid var(--accent);
+}
+.lb-you-badge {
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--accent);
+  color: #000;
+  padding: 1px 5px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+.lb-address-link {
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.lb-address-link:hover { color: var(--accent); }
+
+/* ── Copy referral button ── */
+.btn-copy-referral {
+  width: 100%;
+  padding: 10px 16px;
+  background: rgba(249,115,22,0.08);
+  border: 1px solid rgba(249,115,22,0.25);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Syne', sans-serif;
+}
+.btn-copy-referral:hover { background: rgba(249,115,22,0.15); }
+
+/* ── Mobile improvements ── */
+@media (max-width: 480px) {
+  .btn-checkin, .btn-claim { min-height: 52px; font-size: 17px; }
+  .streak-number { font-size: 64px; }
+  .app-card { padding: 20px 16px; }
+  .protocol-stats { grid-template-columns: repeat(2, 1fr); }
 }
