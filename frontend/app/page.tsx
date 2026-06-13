@@ -9,13 +9,7 @@ import { StreakDisplay } from "../components/StreakDisplay";
 import { MiniPayBadge, useMiniPay } from "../components/MiniPayDetector";
 import { DAILYDROP_ABI, CONTRACT_ADDRESSES } from "../lib/contract";
 import { AddTokenButton } from "../components/AddTokenButton";
-
-interface ProtocolStats {
-  totalCheckIns: number;
-  uniqueWallets: number;
-  celo: { checkIns: number; wallets: number };
-  base: { checkIns: number; wallets: number };
-}
+import InstallBanner from "../components/InstallBanner";
 
 export default function Home() {
   const { address, isConnected } = useAccount();
@@ -23,12 +17,12 @@ export default function Home() {
   const { isMiniPay } = useMiniPay();
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [refreshKey, setRefreshKey] = useState(0);
-  const [stats, setStats] = useState<ProtocolStats | null>(null);
+  const [globalStats, setGlobalStats] = useState({ totalCheckIns: 0, uniqueWallets: 0, celoWallets: 0, baseWallets: 0 });
 
   useEffect(() => {
     fetch("/api/stats")
-      .then((r) => r.json())
-      .then((d) => { if (d.totalCheckIns !== undefined) setStats(d); })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setGlobalStats(d); })
       .catch(() => {});
   }, []);
 
@@ -84,6 +78,7 @@ export default function Home() {
   return (
     <main className="app-container">
       {/* Header */}
+      <InstallBanner />
       <header className="app-header">
         <div className="logo">
           <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -111,27 +106,24 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Protocol stats bar */}
-      {stats && (
-        <div className="stats-bar">
-          <div className="stats-item">
-            <span className="stats-num">{stats.totalCheckIns.toLocaleString()}</span>
-            <span className="stats-label">Total Check-ins</span>
+      {/* Protocol stats */}
+      {globalStats.totalCheckIns > 0 && (
+        <div className="protocol-stats">
+          <div className="protocol-stat-card">
+            <div className="protocol-stat-value">{globalStats.totalCheckIns.toLocaleString()}</div>
+            <div className="protocol-stat-label">Total check-ins</div>
           </div>
-          <div className="stats-divider" />
-          <div className="stats-item">
-            <span className="stats-num">{stats.uniqueWallets.toLocaleString()}</span>
-            <span className="stats-label">Unique Wallets</span>
+          <div className="protocol-stat-card">
+            <div className="protocol-stat-value">{globalStats.uniqueWallets.toLocaleString()}</div>
+            <div className="protocol-stat-label">Unique wallets</div>
           </div>
-          <div className="stats-divider" />
-          <div className="stats-item">
-            <span className="stats-num">{stats.celo.checkIns.toLocaleString()}</span>
-            <span className="stats-label">Celo</span>
+          <div className="protocol-stat-card">
+            <div className="protocol-stat-value">{globalStats.celoWallets.toLocaleString()}</div>
+            <div className="protocol-stat-label">Celo</div>
           </div>
-          <div className="stats-divider" />
-          <div className="stats-item">
-            <span className="stats-num">{stats.base.checkIns.toLocaleString()}</span>
-            <span className="stats-label">Base</span>
+          <div className="protocol-stat-card">
+            <div className="protocol-stat-value">{globalStats.baseWallets.toLocaleString()}</div>
+            <div className="protocol-stat-label">Base</div>
           </div>
         </div>
       )}
@@ -205,22 +197,29 @@ export default function Home() {
             <span className="step-num">4</span>
             <span>Claim 10 DROP tokens 🎁</span>
           </div>
+          <div className="step">
+            <span className="step-num">5</span>
+            <span>Invite friends &amp; share your streak 🔗</span>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="app-footer">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "6px" }}>
-          <svg width="16" height="16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="64" height="64" rx="14" fill="#111"/>
-            <circle cx="32" cy="30" r="24" fill="#f97316"/>
-            <path d="M32 14 C39 23 46 30 46 39 C46 48 40 54 32 54 C24 54 18 48 18 39 C18 30 25 23 32 14Z" fill="#fff" opacity="0.95"/>
-          </svg>
-          <span>DailyDrop</span>
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           <a href="/leaderboard">🏆 Leaderboard</a>
+          <a href="/api/frame" target="_blank" rel="noopener noreferrer">🖼 Farcaster Frame</a>
         </div>
         <p>Built on Celo &amp; Base · Compatible with MiniPay &amp; Farcaster</p>
-        <a href="/api/frame" target="_blank" rel="noopener noreferrer">Farcaster Frame</a>
+        <p style={{ fontSize: 10 }}>
+          <a href="https://github.com/wkalidev/dailydrop" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>
+            GitHub
+          </a>
+          {" · "}
+          <a href="https://www.npmjs.com/package/@dailydrop/shield" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>
+            npm
+          </a>
+        </p>
       </footer>
     </main>
   );

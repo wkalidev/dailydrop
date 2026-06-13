@@ -52,9 +52,8 @@ export async function GET() {
       {
         totalCheckIns: celoTxCount + baseTxCount,
         uniqueWallets: allUsers.size,
-        celo: { checkIns: celoTxCount, wallets: celoUsers.size },
-        base: { checkIns: baseTxCount, wallets: baseUsers.size },
-        updatedAt: new Date().toISOString(),
+        celoWallets: celoUsers.size,
+        baseWallets: baseUsers.size,
       },
       {
         headers: {
