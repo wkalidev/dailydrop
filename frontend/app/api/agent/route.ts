@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createPublicClient, http } from "viem";
 import { celo, base } from "viem/chains";
 
-const CELO_DAILYDROP = "0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b" as `0x${string}`;
-const BASE_DAILYDROP = "0x974fB504172f2aABbecc698Ebf137202a5E4e495" as `0x${string}`;
+const CELO_DAILYDROP = (process.env.NEXT_PUBLIC_CELO_CONTRACT_ADDRESS || "0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b") as `0x${string}`;
+const BASE_DAILYDROP = (process.env.NEXT_PUBLIC_BASE_CONTRACT_ADDRESS  || "0x974fB504172f2aABbecc698Ebf137202a5E4e495") as `0x${string}`;
 
 const DAILYDROP_ABI = [
   {
