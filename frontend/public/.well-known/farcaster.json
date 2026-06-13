@@ -11,7 +11,7 @@
     "description": "Check in on-chain every day. Build a 7-day streak and earn 10 DROP tokens. Built on Celo and Base.",
     "iconUrl": "https://dailydrop-five.vercel.app/icon-512.png",
     "homeUrl": "https://dailydrop-five.vercel.app",
-    "imageUrl": "https://dailydrop-five.vercel.app/og-image.png",
+    "imageUrl": "https://dailydrop-five.vercel.app/og-image.svg",
     "buttonTitle": "Check In Today",
     "splashImageUrl": "https://dailydrop-five.vercel.app/icon-512.png",
     "splashBackgroundColor": "#0a0a0a",
@@ -22,6 +22,6 @@
     "castShareUrl": "https://dailydrop-five.vercel.app",
     "ogTitle": "DailyDrop",
     "ogDescription": "Check in on-chain daily. 7-day streak earns 10 DROP tokens.",
-    "ogImageUrl": "https://dailydrop-five.vercel.app/og-image.png"
+    "ogImageUrl": "https://dailydrop-five.vercel.app/og-image.svg"
   }
 }

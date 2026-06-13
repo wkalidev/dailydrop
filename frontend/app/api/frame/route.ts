@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dailydrop.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dailydrop-five.vercel.app";
 
 // Frame initial — GET
 export async function GET() {

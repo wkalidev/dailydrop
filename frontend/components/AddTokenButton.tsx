@@ -34,7 +34,7 @@ export function AddTokenButton() {
     }
   };
 
-  if (!contractAddress) return null;
+  if (!contractAddress || contractAddress === "0x0000000000000000000000000000000000000000") return null;
 
   return (
     <button

@@ -21,8 +21,12 @@ const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 function checkRateLimit(user: string): boolean {
   const now = Date.now();
+  // Evict expired entries to prevent unbounded map growth
+  for (const [key, val] of rateLimitMap) {
+    if (now > val.resetAt) rateLimitMap.delete(key);
+  }
   const entry = rateLimitMap.get(user);
-  if (!entry || now > entry.resetAt) {
+  if (!entry) {
     rateLimitMap.set(user, { count: 1, resetAt: now + 3_600_000 });
     return true;
   }

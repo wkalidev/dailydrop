@@ -177,8 +177,6 @@ contract StreakMaster is Ownable, ReentrancyGuard {
             _updateTimeWeightedStreak(user, u.streak);
         }
 
-        // Store old streak for tier checking
-        uint256 oldStreak = u.streak;
         // Capture before totalCheckIns increment so isFirstCheckIn is true only for a wallet's very first check-in ever
         bool isFirstCheckIn = u.totalCheckIns == 0;
 
