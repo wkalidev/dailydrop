@@ -66,5 +66,5 @@ export async function GET() {
     console.error("Leaderboard fetch failed:", err);
   }
 
-  return NextResponse.json({ addresses: KNOWN_ADDRESSES, source: "fallback" });
+  return NextResponse.json({ addresses: KNOWN_ADDRESSES, celoAddresses: [], baseAddresses: [], source: "fallback" });
 }
