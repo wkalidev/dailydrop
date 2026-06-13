@@ -18,15 +18,20 @@ const KNOWN_ADDRESSES = [
 
 export async function GET() {
   try {
-    // Fetch Celo and Base transactions in parallel
-    const apiKey = process.env.CELOSCAN_API_KEY || process.env.BASESCAN_API_KEY || process.env.ETHERSCAN_V2_API_KEY || "";
-    const [celoRes, baseRes] = await Promise.allSettled([
+    const celoKey = process.env.CELOSCAN_API_KEY || process.env.ETHERSCAN_V2_API_KEY || "";
+    const baseKey = process.env.BASESCAN_API_KEY || process.env.ETHERSCAN_V2_API_KEY || process.env.ETHERSCAN_API_KEY || process.env.CELOSCAN_API_KEY || "";
+
+    const [celoRes, baseV2Res, baseV1Res] = await Promise.allSettled([
       fetch(
-        `https://api.etherscan.io/v2/api?chainid=42220&module=account&action=txlist&address=${CELO_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${apiKey}`,
+        `https://api.etherscan.io/v2/api?chainid=42220&module=account&action=txlist&address=${CELO_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${celoKey}`,
         { cache: "no-store", headers: { Accept: "application/json" } }
       ),
       fetch(
-        `https://api.etherscan.io/v2/api?chainid=8453&module=account&action=txlist&address=${BASE_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${apiKey}`,
+        `https://api.etherscan.io/v2/api?chainid=8453&module=account&action=txlist&address=${BASE_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${baseKey}`,
+        { cache: "no-store", headers: { Accept: "application/json" } }
+      ),
+      fetch(
+        `https://api.basescan.org/api?module=account&action=txlist&address=${BASE_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${baseKey}`,
         { cache: "no-store", headers: { Accept: "application/json" } }
       ),
     ]);
@@ -45,15 +50,17 @@ export async function GET() {
       }
     }
 
-    if (baseRes.status === "fulfilled" && baseRes.value.ok) {
-      const json = await baseRes.value.json();
-      if (json.status === "1" && Array.isArray(json.result)) {
-        json.result
-          .filter((tx: { isError: string; to: string }) =>
-            tx.isError === "0" && tx.to?.toLowerCase() === BASE_CONTRACT.toLowerCase()
-          )
-          .forEach((tx: { from: string }) => fromBase.push(tx.from));
-      }
+    // Use whichever Base source returns data
+    const baseJsonV2 = baseV2Res.status === "fulfilled" && baseV2Res.value.ok ? await baseV2Res.value.json() : null;
+    const baseJsonV1 = baseV1Res.status === "fulfilled" && baseV1Res.value.ok ? await baseV1Res.value.json() : null;
+    const baseJson = baseJsonV2?.status === "1" ? baseJsonV2 : baseJsonV1;
+
+    if (baseJson?.status === "1" && Array.isArray(baseJson.result)) {
+      baseJson.result
+        .filter((tx: { isError: string; to: string }) =>
+          tx.isError === "0" && tx.to?.toLowerCase() === BASE_CONTRACT.toLowerCase()
+        )
+        .forEach((tx: { from: string }) => fromBase.push(tx.from));
     }
 
     const combined = [...fromCelo, ...fromBase];

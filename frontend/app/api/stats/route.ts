@@ -10,14 +10,20 @@ const BASE_CONTRACT  = process.env.NEXT_PUBLIC_BASE_CONTRACT_ADDRESS  || "0x974f
 
 export async function GET() {
   try {
-    const apiKey = process.env.CELOSCAN_API_KEY || process.env.BASESCAN_API_KEY || process.env.ETHERSCAN_V2_API_KEY || "";
-    const [celoRes, baseRes] = await Promise.allSettled([
+    const celoKey = process.env.CELOSCAN_API_KEY || process.env.ETHERSCAN_V2_API_KEY || "";
+    const baseKey = process.env.BASESCAN_API_KEY || process.env.ETHERSCAN_V2_API_KEY || process.env.ETHERSCAN_API_KEY || process.env.CELOSCAN_API_KEY || "";
+
+    const [celoRes, baseV2Res, baseV1Res] = await Promise.allSettled([
       fetch(
-        `https://api.etherscan.io/v2/api?chainid=42220&module=account&action=txlist&address=${CELO_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${apiKey}`,
+        `https://api.etherscan.io/v2/api?chainid=42220&module=account&action=txlist&address=${CELO_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${celoKey}`,
         { cache: "no-store" }
       ),
       fetch(
-        `https://api.etherscan.io/v2/api?chainid=8453&module=account&action=txlist&address=${BASE_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${apiKey}`,
+        `https://api.etherscan.io/v2/api?chainid=8453&module=account&action=txlist&address=${BASE_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${baseKey}`,
+        { cache: "no-store" }
+      ),
+      fetch(
+        `https://api.basescan.org/api?module=account&action=txlist&address=${BASE_CONTRACT}&startblock=0&endblock=latest&sort=asc&apikey=${baseKey}`,
         { cache: "no-store" }
       ),
     ]);
@@ -38,15 +44,17 @@ export async function GET() {
       }
     }
 
-    if (baseRes.status === "fulfilled" && baseRes.value.ok) {
-      const json = await baseRes.value.json();
-      if (json.status === "1" && Array.isArray(json.result)) {
-        const txs = json.result.filter((tx: { isError: string; to: string }) =>
-          tx.isError === "0" && tx.to?.toLowerCase() === BASE_CONTRACT.toLowerCase()
-        );
-        baseTxCount = txs.length;
-        txs.forEach((tx: { from: string }) => baseUsers.add(tx.from.toLowerCase()));
-      }
+    // Use whichever Base source returns data (Etherscan V2 or Basescan V1)
+    const baseJsonV2 = baseV2Res.status === "fulfilled" && baseV2Res.value.ok ? await baseV2Res.value.json() : null;
+    const baseJsonV1 = baseV1Res.status === "fulfilled" && baseV1Res.value.ok ? await baseV1Res.value.json() : null;
+    const baseJson = baseJsonV2?.status === "1" ? baseJsonV2 : baseJsonV1;
+
+    if (baseJson?.status === "1" && Array.isArray(baseJson.result)) {
+      const txs = baseJson.result.filter((tx: { isError: string; to: string }) =>
+        tx.isError === "0" && tx.to?.toLowerCase() === BASE_CONTRACT.toLowerCase()
+      );
+      baseTxCount = txs.length;
+      txs.forEach((tx: { from: string }) => baseUsers.add(tx.from.toLowerCase()));
     }
 
     const allUsers = new Set([...celoUsers, ...baseUsers]);
