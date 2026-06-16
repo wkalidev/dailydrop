@@ -12,11 +12,16 @@ contract DailyDrop is ERC20, Ownable {
     uint256 public constant CHECKIN_INTERVAL = 86400; // 24h en secondes
     uint256 public constant STREAK_TARGET = 7;
     uint256 public constant REWARD_AMOUNT = 10 * 10 ** 18; // 10 DROP
+    
+    // ENHANCEMENT: Track check-ins by day number instead of timestamp
+    uint256 public constant SECONDS_PER_DAY = 86400;
+    uint256 public genesisDay; // Day 0 reference
 
     struct UserData {
         uint256 streak;
         uint256 lastCheckIn;
         uint256 totalCheckIns;
+        uint256 lastCheckInDay; // ENHANCEMENT: Track by day number
     }
 
     mapping(address => UserData) private userData;
@@ -30,32 +35,43 @@ contract DailyDrop is ERC20, Ownable {
     event StreakReset(address indexed user);
     event MintInitial(address indexed to, uint256 amount);
 
-    constructor() ERC20("DailyDrop", "DROP") Ownable(msg.sender) {}
+    constructor() ERC20("DailyDrop", "DROP") Ownable(msg.sender) {
+        genesisDay = block.timestamp / SECONDS_PER_DAY;
+    }
 
     /**
-     * @notice Check-in quotidien. 1 fois par 24h max.
-     * Si l'utilisateur a raté un jour, le streak repart à 0.
+     * @notice Get current day number since genesis (immune to timestamp manipulation within same day)
+     */
+    function getCurrentDay() public view returns (uint256) {
+        return (block.timestamp / SECONDS_PER_DAY) - genesisDay;
+    }
+
+    /**
+     * @notice Check-in quotidien avec protection contre manipulation des timestamps.
      */
     function checkIn() external {
         UserData storage user = userData[msg.sender];
-        uint256 currentTime = block.timestamp;
-
+        uint256 currentDay = getCurrentDay();
+        uint256 lastDay = user.lastCheckInDay;
+        
         require(
-            currentTime >= user.lastCheckIn + CHECKIN_INTERVAL,
+            currentDay > lastDay,
             "DailyDrop: already checked in today"
         );
-
-        // Si plus de 48h depuis le dernier check-in → streak reset
-        if (user.lastCheckIn > 0 && currentTime > user.lastCheckIn + CHECKIN_INTERVAL * 2) {
+        
+        // If missed more than 1 day, reset streak
+        if (lastDay > 0 && currentDay > lastDay + 1) {
             user.streak = 0;
             emit StreakReset(msg.sender);
         }
-
+        
+        // ENHANCEMENT: Store actual time separately for transparency
         user.streak += 1;
-        user.lastCheckIn = currentTime;
+        user.lastCheckIn = block.timestamp;
+        user.lastCheckInDay = currentDay;
         user.totalCheckIns += 1;
-
-        emit CheckIn(msg.sender, user.streak, currentTime);
+        
+        emit CheckIn(msg.sender, user.streak, block.timestamp);
     }
 
     /**
@@ -65,13 +81,13 @@ contract DailyDrop is ERC20, Ownable {
      */
     function claimReward() external {
         UserData storage user = userData[msg.sender];
-
+        
         require(user.streak >= STREAK_TARGET, "DailyDrop: streak not reached");
-
+        
         user.streak = 0;
         emit StreakReset(msg.sender);
         _mint(msg.sender, REWARD_AMOUNT);
-
+        
         emit RewardClaimed(msg.sender, REWARD_AMOUNT);
     }
 
@@ -88,6 +104,13 @@ contract DailyDrop is ERC20, Ownable {
     function getLastCheckIn(address _user) external view returns (uint256) {
         return userData[_user].lastCheckIn;
     }
+    
+    /**
+     * @notice Retourne le jour du dernier check-in.
+     */
+    function getLastCheckInDay(address _user) external view returns (uint256) {
+        return userData[_user].lastCheckInDay;
+    }
 
     /**
      * @notice Retourne toutes les données de l'utilisateur.
@@ -101,14 +124,16 @@ contract DailyDrop is ERC20, Ownable {
             uint256 totalCheckIns,
             bool canCheckIn,
             bool canClaim,
-            uint256 nextCheckIn
+            uint256 nextCheckIn,
+            uint256 currentDay  // ENHANCEMENT: Added current day
         )
     {
         UserData memory u = userData[_user];
+        currentDay = getCurrentDay();
         streak = u.streak;
         lastCheckIn = u.lastCheckIn;
         totalCheckIns = u.totalCheckIns;
-        canCheckIn = block.timestamp >= u.lastCheckIn + CHECKIN_INTERVAL;
+        canCheckIn = currentDay > u.lastCheckInDay;
         canClaim = u.streak >= STREAK_TARGET;
         nextCheckIn = u.lastCheckIn > 0 ? u.lastCheckIn + CHECKIN_INTERVAL : 0;
     }
