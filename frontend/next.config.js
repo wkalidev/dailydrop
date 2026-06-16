@@ -12,6 +12,11 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      { source: "/.well-known/agent-card.json", destination: "/api/agent-card" },
+    ];
+  },
 };
 
 module.exports = nextConfig;

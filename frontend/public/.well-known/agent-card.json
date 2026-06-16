@@ -1,0 +1,19 @@
+{
+  "name": "DailyDrop Shield Agent",
+  "description": "Proof of Presence agent on Celo and Base. Verify real humans by on-chain daily streak. Free public API for sybil resistance.",
+  "url": "https://dailydrop-five.vercel.app",
+  "version": "1.1.0",
+  "skills": [
+    { "id": "verify_streak",   "name": "Verify streak",  "description": "Verify if a wallet has a minimum on-chain streak" },
+    { "id": "get_profile",     "name": "Get profile",    "description": "Full DailyDrop profile for a wallet address" },
+    { "id": "verify_batch",    "name": "Batch verify",   "description": "Verify up to 100 wallets for airdrop filtering" },
+    { "id": "get_leaderboard", "name": "Leaderboard",    "description": "Top streak holders on Celo and Base" },
+    { "id": "get_stats",       "name": "Global stats",   "description": "Live check-in stats across Celo and Base" }
+  ],
+  "mcp": "https://dailydrop-five.vercel.app/api/mcp",
+  "x402": { "supported": false },
+  "oasf": {
+    "skills": ["tool_interaction", "analytical_skills"],
+    "domains": ["technology/blockchain", "trust_and_safety/fraud_prevention"]
+  }
+}
