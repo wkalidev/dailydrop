@@ -200,15 +200,17 @@ export default function Home() {
           <a href="/api/frame" target="_blank" rel="noopener noreferrer">🖼 Farcaster Frame</a>
         </div>
         <p>Built on Celo &amp; Base · Compatible with MiniPay &amp; Farcaster</p>
-        <p style={{ fontSize: 10 }}>
+        <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", fontSize: 11 }}>
+          <a href="/terms" style={{ color: "var(--text-muted)" }}>Terms</a>
+          <a href="/privacy" style={{ color: "var(--text-muted)" }}>Privacy</a>
+          <a href="https://github.com/wkalidev/dailydrop/issues" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>Support</a>
           <a href="https://github.com/wkalidev/dailydrop" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>
             GitHub
           </a>
-          {" · "}
           <a href="https://www.npmjs.com/package/@dailydrop/shield" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>
             npm
           </a>
-        </p>
+        </div>
       </footer>
     </main>
   );

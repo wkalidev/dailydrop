@@ -4,6 +4,7 @@ import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
 import { DAILYDROP_ABI, CONTRACT_ADDRESSES } from "../../lib/contract";
+import { useMiniPay } from "../../components/MiniPayDetector";
 import Link from "next/link";
 
 interface LeaderEntry {
@@ -16,6 +17,7 @@ export default function Leaderboard() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const publicClient = usePublicClient();
+  const { isMiniPay } = useMiniPay();
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [leaders, setLeaders] = useState<LeaderEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,10 +106,11 @@ export default function Leaderboard() {
           <span className="logo-text">DailyDrop</span>
         </Link>
         <div className="header-right">
-          {isConnected
-            ? <ConnectButton showBalance={false} chainStatus="icon" />
-            : <ConnectButton label="Connect" showBalance={false} />
-          }
+          {!isMiniPay && (
+            isConnected
+              ? <ConnectButton showBalance={false} chainStatus="icon" />
+              : <ConnectButton label="Connect" showBalance={false} />
+          )}
         </div>
       </header>
 
