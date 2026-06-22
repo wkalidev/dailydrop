@@ -1,14 +1,13 @@
 {
   "name": "@dailydrop/shield",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Proof of Presence verification SDK — verify real humans by their on-chain streak",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
       "require": "./dist/index.js",
+      "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },

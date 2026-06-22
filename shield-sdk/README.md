@@ -5,14 +5,19 @@
 [![npm](https://img.shields.io/npm/v/@dailydrop/shield)](https://www.npmjs.com/package/@dailydrop/shield)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## What's new in v1.1.0
+## What's new in v1.2.0
+
+- Fix: removed broken `"import": "dist/index.mjs"` from exports (file never existed — ESM consumers failed silently)
+- New exports: `STREAK_MASTER_ADDRESS` (Base) and `STREAK_NFT_ADDRESS` (Base) — deployed contract addresses
+- All 5 contract addresses now exported as named constants
+
+## What was in v1.1.0
 
 - `verifyBatch()` — verify multiple addresses in parallel
 - `getProfile()` — alias for `verify(address, 1)` with full data
 - Automatic retry on network errors
 - Configurable timeout (`timeout` option)
 - Address validation before any network call
-- ESM/CJS dual export
 
 ## Why?
 
@@ -165,6 +170,20 @@ GET https://dailydrop-five.vercel.app/api/verify?address=0xABC&minStreak=7
 | DailyDrop | Celo Mainnet | `0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b` |
 | DailyDrop | Base Mainnet | `0x974fB504172f2aABbecc698Ebf137202a5E4e495` |
 | DailyDropShield | Celo Mainnet | `0x24eFf9bdE979D6dccC869178F353D663bC8A6983` |
+| StreakMaster | Base Mainnet | `0x038F496eCf99ecA5959A40493C96670Ea8a14345` |
+| StreakNFT | Base Mainnet | `0xbBa5865b3E3A5033730f851d555cc922B74B25Fa` |
+
+All 5 addresses are exported as named constants:
+
+```typescript
+import {
+  CELO_DAILYDROP,
+  BASE_DAILYDROP,
+  SHIELD_ADDRESS,
+  STREAK_MASTER_ADDRESS,
+  STREAK_NFT_ADDRESS,
+} from "@dailydrop/shield"
+```
 
 ## License
 

@@ -46,10 +46,12 @@ export interface ShieldOptions {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 // These addresses are immutable and correspond to the mainnet deployment
-const DEFAULT_API_URL = "https://dailydrop-five.vercel.app";
-const CELO_DAILYDROP  = "0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b" as `0x${string}`;
-const BASE_DAILYDROP  = "0x974fB504172f2aABbecc698Ebf137202a5E4e495" as `0x${string}`;
-const SHIELD_ADDRESS  = "0x24eFf9bdE979D6dccC869178F353D663bC8A6983" as `0x${string}`;
+const DEFAULT_API_URL      = "https://dailydrop-five.vercel.app";
+const CELO_DAILYDROP       = "0xd8Cc2a639a8D4e7A75a5B41C28606712e4fDf70b" as `0x${string}`;
+const BASE_DAILYDROP       = "0x974fB504172f2aABbecc698Ebf137202a5E4e495" as `0x${string}`;
+const SHIELD_ADDRESS       = "0x24eFf9bdE979D6dccC869178F353D663bC8A6983" as `0x${string}`;
+const STREAK_MASTER_ADDRESS = "0x038F496eCf99ecA5959A40493C96670Ea8a14345" as `0x${string}`;
+const STREAK_NFT_ADDRESS    = "0xbBa5865b3E3A5033730f851d555cc922B74B25Fa" as `0x${string}`;
 
 const DAILYDROP_ABI = [
   {
@@ -256,5 +258,5 @@ export class DailyDropShield {
   }
 }
 
-export { SHIELD_ADDRESS, CELO_DAILYDROP, BASE_DAILYDROP };
+export { SHIELD_ADDRESS, CELO_DAILYDROP, BASE_DAILYDROP, STREAK_MASTER_ADDRESS, STREAK_NFT_ADDRESS };
 export default DailyDropShield;
