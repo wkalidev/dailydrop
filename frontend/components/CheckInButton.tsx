@@ -36,6 +36,16 @@ function launchConfetti() {
   }
 }
 
+// ─── Error formatting ─────────────────────────────────────────────────────────
+function formatTxError(err: Error): string {
+  const msg = err.message ?? "";
+  if (/user rejected|user denied|4001/i.test(msg)) return "Transaction cancelled.";
+  if (/insufficient.*fund|not enough.*gas/i.test(msg)) return "Insufficient funds for gas.";
+  if (/already checked in/i.test(msg)) return "Already checked in today. Come back tomorrow!";
+  if (/network|fetch|connect/i.test(msg)) return "Network error. Check your connection and retry.";
+  return msg.slice(0, 120) || "Unknown error.";
+}
+
 // ─── Relayer call ─────────────────────────────────────────────────────────────
 async function notifyRelayer(
   userAddress: string,
@@ -215,7 +225,7 @@ export function CheckInButton({ canCheckIn, canClaim, streak = 0, onSuccess }: C
       {/* Error */}
       {error && (
         <p className="error-msg">
-          ❌ {(error.message ?? "Unknown error").slice(0, 100)}
+          ❌ {formatTxError(error)}
         </p>
       )}
     </div>

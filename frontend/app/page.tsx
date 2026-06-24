@@ -15,16 +15,16 @@ import { FarcasterAutoConnect } from "../components/FarcasterAutoConnect";
 export default function Home() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const { isMiniPay } = useMiniPay();
+  const { isMiniPay, connectStatus, connectError, reconnect } = useMiniPay();
   const contractAddress = CONTRACT_ADDRESSES[chainId];
   const [refreshKey, setRefreshKey] = useState(0);
-  const [globalStats, setGlobalStats] = useState({ totalCheckIns: 0, uniqueWallets: 0, celoWallets: 0, baseWallets: 0 });
+  const [globalStats, setGlobalStats] = useState<{ totalCheckIns: number; uniqueWallets: number; celoWallets: number; baseWallets: number } | null>(null);
 
   useEffect(() => {
     fetch("/api/stats")
       .then(r => r.ok ? r.json() : null)
-      .then(d => { if (d) setGlobalStats(d); })
-      .catch(() => {});
+      .then(d => { setGlobalStats(d ?? { totalCheckIns: 0, uniqueWallets: 0, celoWallets: 0, baseWallets: 0 }); })
+      .catch(() => { setGlobalStats({ totalCheckIns: 0, uniqueWallets: 0, celoWallets: 0, baseWallets: 0 }); });
   }, []);
 
 
@@ -95,27 +95,36 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Protocol stats */}
-      {globalStats.totalCheckIns > 0 && (
-        <div className="protocol-stats">
-          <div className="protocol-stat-card">
-            <div className="protocol-stat-value">{globalStats.totalCheckIns.toLocaleString()}</div>
-            <div className="protocol-stat-label">Total check-ins</div>
-          </div>
-          <div className="protocol-stat-card">
-            <div className="protocol-stat-value">{globalStats.uniqueWallets.toLocaleString()}</div>
-            <div className="protocol-stat-label">Unique wallets</div>
-          </div>
-          <div className="protocol-stat-card">
-            <div className="protocol-stat-value">{globalStats.celoWallets.toLocaleString()}</div>
-            <div className="protocol-stat-label">Celo</div>
-          </div>
-          <div className="protocol-stat-card">
-            <div className="protocol-stat-value">{globalStats.baseWallets.toLocaleString()}</div>
-            <div className="protocol-stat-label">Base</div>
-          </div>
-        </div>
-      )}
+      {/* Protocol stats — always rendered to avoid CLS; skeleton while loading */}
+      <div className="protocol-stats">
+        {globalStats === null ? (
+          <>
+            <div className="protocol-stat-card"><div className="skeleton" style={{ height: 24, width: "60%", margin: "0 auto" }} /><div className="protocol-stat-label">Total check-ins</div></div>
+            <div className="protocol-stat-card"><div className="skeleton" style={{ height: 24, width: "60%", margin: "0 auto" }} /><div className="protocol-stat-label">Unique wallets</div></div>
+            <div className="protocol-stat-card"><div className="skeleton" style={{ height: 24, width: "60%", margin: "0 auto" }} /><div className="protocol-stat-label">Celo</div></div>
+            <div className="protocol-stat-card"><div className="skeleton" style={{ height: 24, width: "60%", margin: "0 auto" }} /><div className="protocol-stat-label">Base</div></div>
+          </>
+        ) : globalStats.totalCheckIns > 0 ? (
+          <>
+            <div className="protocol-stat-card">
+              <div className="protocol-stat-value">{globalStats.totalCheckIns.toLocaleString()}</div>
+              <div className="protocol-stat-label">Total check-ins</div>
+            </div>
+            <div className="protocol-stat-card">
+              <div className="protocol-stat-value">{globalStats.uniqueWallets.toLocaleString()}</div>
+              <div className="protocol-stat-label">Unique wallets</div>
+            </div>
+            <div className="protocol-stat-card">
+              <div className="protocol-stat-value">{globalStats.celoWallets.toLocaleString()}</div>
+              <div className="protocol-stat-label">Celo</div>
+            </div>
+            <div className="protocol-stat-card">
+              <div className="protocol-stat-value">{globalStats.baseWallets.toLocaleString()}</div>
+              <div className="protocol-stat-label">Base</div>
+            </div>
+          </>
+        ) : null}
+      </div>
 
       {/* Wrong network */}
       {isWrongNetwork && (
@@ -159,9 +168,22 @@ export default function Home() {
               <circle cx="26" cy="36" r="6" fill="#ffffff" opacity="0.4"/>
             </svg>
           </div>
-          <p>Connect your wallet to start your streak</p>
-          {!isMiniPay && (
-            <ConnectButton label="Connect Wallet" />
+          {isMiniPay ? (
+            connectStatus === "pending" ? (
+              <p>Connecting to MiniPay…</p>
+            ) : connectError ? (
+              <>
+                <p style={{ color: "var(--error)", fontSize: 14 }}>Failed to connect to MiniPay wallet.</p>
+                <button onClick={reconnect} className="btn-checkin" style={{ marginTop: 8 }}>Retry Connection</button>
+              </>
+            ) : (
+              <p>Connect your wallet to start your streak</p>
+            )
+          ) : (
+            <>
+              <p>Connect your wallet to start your streak</p>
+              <ConnectButton label="Connect Wallet" />
+            </>
           )}
         </div>
       ) : null}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useConnect, useChainId, useSwitchChain } from "wagmi";
 import { injected } from "wagmi/connectors";
 
@@ -8,7 +8,7 @@ const CELO_CHAIN_ID = 42220;
 
 export function useMiniPay() {
   const [isMiniPay, setIsMiniPay] = useState(false);
-  const { connect } = useConnect();
+  const { connect, error: connectError, status: connectStatus } = useConnect();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
 
@@ -29,7 +29,11 @@ export function useMiniPay() {
     }
   }, [isMiniPay, chainId, switchChain]);
 
-  return { isMiniPay };
+  const reconnect = useCallback(() => {
+    connect({ connector: injected() });
+  }, [connect]);
+
+  return { isMiniPay, connectError, connectStatus, reconnect };
 }
 
 export function MiniPayBadge() {

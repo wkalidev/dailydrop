@@ -129,6 +129,15 @@ G$ token on Celo: `0x62B8B11039FcfE5aB0C56E502b1C372A3D2a9C7A`
 
 ---
 
+## Performance
+
+- Fonts: self-hosted at build time via `next/font/google` — eliminates render-blocking Google Fonts request
+- Viewport: user zoom enabled (accessibility compliant, WCAG 1.4.4)
+- CLS: protocol stats section always reserves DOM space (skeleton while loading) to prevent layout shift
+- Bundle: `optimizePackageImports` for wagmi / viem / RainbowKit tree-shaking
+
+---
+
 ## Stack
 
 | Layer | Tech |
@@ -180,11 +189,13 @@ npm run deploy:base   # Deploy DailyDrop on Base
 ## MiniPay
 
 Auto-detects MiniPay via `window.ethereum.isMiniPay`:
-- Auto wallet connection (no modal shown)
-- Forces Celo mainnet on connection
+- Auto wallet connection via injected provider (no modal shown)
+- Forces Celo mainnet on every connection via `switchChain`
+- Connect button hidden when MiniPay is detected
+- Graceful connection error recovery with retry button
 - Gas fees in cUSD
-- Mobile-optimized UI
-- Terms / Privacy / Support links in footer
+- Mobile-optimized UI (360×640 px minimum viewport, user zoom enabled)
+- Terms / Privacy / Support links accessible in-app footer
 
 Test: https://dailydrop-five.vercel.app
 
@@ -323,12 +334,14 @@ Next.js API route (`/api/relayer`) that receives check-in notifications and call
 - ✅ MCP Server live — `/api/mcp`
 - ✅ A2A AgentCard — `/.well-known/agent-card.json`
 - ✅ `@dailydrop/shield` v1.2.0 published on npm
-- ✅ MiniPay compatible (auto-detect, force Celo, no modal)
+- ✅ MiniPay compatible (auto-detect, force Celo, no modal, reconnect on failure)
 - ✅ Farcaster Mini App (farcaster.json + frame endpoint)
 - ✅ G$ integration (GoodBuilders Season 4)
 - ✅ Leaderboard (Celoscan + Basescan, live on-chain)
 - ✅ AI streak coach (Claude Haiku + deterministic fallback)
 - ✅ PWA (manifest + service worker)
+- ✅ Fonts self-hosted via next/font (no render-blocking external requests)
+- ✅ Accessible viewport (user zoom enabled, WCAG 1.4.4 compliant)
 
 ---
 

@@ -1,14 +1,28 @@
 import type { Metadata, Viewport } from "next";
+import { Space_Mono, Syne } from "next/font/google";
 import { Providers } from "./providers";
 import "./globals.css";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://dailydrop-five.vercel.app";
 
+const syne = Syne({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-syne",
+  display: "swap",
+});
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-space-mono",
+  display: "swap",
+});
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  minimumScale: 1,
   viewportFit: "cover",
 };
 
@@ -73,7 +87,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${syne.variable} ${spaceMono.variable}`}>
       <body>
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {
