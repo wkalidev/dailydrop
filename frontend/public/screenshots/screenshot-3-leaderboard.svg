@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <radialGradient id="bg-lb" cx="50%" cy="0%" r="55%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.09"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="rank-glow">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <!-- Gold shimmer for #1 -->
+    <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── Background ── -->
+  <rect width="1080" height="1920" fill="#0a0a0a"/>
+  <rect width="1080" height="1920" fill="url(#bg-lb)"/>
+
+  <!-- ── Status bar ── -->
+  <text x="72" y="84" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="600" fill="#f5f5f5">9:41</text>
+  <rect x="846" y="54" width="14" height="30" rx="3" fill="#f5f5f5"/>
+  <rect x="866" y="46" width="14" height="38" rx="3" fill="#f5f5f5"/>
+  <rect x="886" y="38" width="14" height="46" rx="3" fill="#f5f5f5"/>
+  <rect x="906" y="30" width="14" height="54" rx="3" fill="#f5f5f5"/>
+  <path d="M944 66 Q960 50 976 66" stroke="#f5f5f5" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M952 76 Q960 68 968 76" stroke="#f5f5f5" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="960" cy="86" r="6" fill="#f5f5f5"/>
+  <rect x="996" y="42" width="60" height="30" rx="6" fill="none" stroke="#f5f5f5" stroke-width="3"/>
+  <rect x="1056" y="50" width="8" height="14" rx="2" fill="#f5f5f5"/>
+  <rect x="999" y="45" width="48" height="24" rx="4" fill="#f5f5f5"/>
+  <rect x="396" y="24" width="288" height="60" rx="30" fill="#000000"/>
+
+  <!-- ── LEADERBOARD HEADER ── -->
+  <!-- Back arrow -->
+  <text x="60" y="170" font-family="system-ui, -apple-system, sans-serif" font-size="40" fill="#f97316">←</text>
+  <text x="540" y="180" font-family="system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" fill="#f5f5f5" text-anchor="middle" letter-spacing="-1">🏆 Leaderboard</text>
+  <text x="540" y="232" font-family="system-ui, -apple-system, sans-serif" font-size="30" fill="#888888" text-anchor="middle">Top streaks on Celo &amp; Base</text>
+
+  <!-- Chain filter buttons -->
+  <rect x="60" y="268" width="192" height="64" rx="32" fill="rgba(249,115,22,0.15)" stroke="#f97316" stroke-width="2"/>
+  <text x="156" y="308" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#f97316" text-anchor="middle">All chains</text>
+  <rect x="272" y="268" width="176" height="64" rx="32" fill="transparent" stroke="#222222" stroke-width="2"/>
+  <text x="360" y="308" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#888888" text-anchor="middle">Celo</text>
+  <rect x="468" y="268" width="176" height="64" rx="32" fill="transparent" stroke="#222222" stroke-width="2"/>
+  <text x="556" y="308" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#888888" text-anchor="middle">Base</text>
+
+  <!-- ── LEADERBOARD CARD ── -->
+  <rect x="60" y="376" width="960" height="1340" rx="32" fill="#111111" stroke="#222222" stroke-width="2"/>
+
+  <!-- Column headers -->
+  <text x="104" y="432" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#444444" letter-spacing="2">RANK</text>
+  <text x="304" y="432" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#444444" letter-spacing="2">WALLET</text>
+  <text x="740" y="432" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#444444" letter-spacing="2">STREAK</text>
+  <text x="916" y="432" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#444444" letter-spacing="2">CHECK-INS</text>
+  <line x1="84" y1="448" x2="996" y2="448" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 1 — 1st place ── -->
+  <rect x="60" y="448" width="960" height="128" fill="transparent"/>
+  <text x="112" y="524" font-family="system-ui, -apple-system, sans-serif" font-size="48" fill="url(#gold-gradient)" text-anchor="middle">🥇</text>
+  <text x="280" y="512" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x7f3a...9c21</text>
+  <rect x="280" y="524" width="100" height="36" rx="18" fill="rgba(252,180,40,0.12)" stroke="rgba(252,180,40,0.35)" stroke-width="1.5"/>
+  <text x="330" y="548" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#fcb428" text-anchor="middle">CELO</text>
+  <text x="764" y="524" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">47</text>
+  <text x="950" y="524" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">212</text>
+  <line x1="84" y1="576" x2="996" y2="576" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 2 ── -->
+  <text x="112" y="648" font-family="system-ui, -apple-system, sans-serif" font-size="48" fill="#9ca3af" text-anchor="middle">🥈</text>
+  <text x="280" y="636" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x2b81...f440</text>
+  <rect x="280" y="648" width="100" height="36" rx="18" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.3)" stroke-width="1.5"/>
+  <text x="330" y="672" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">BASE</text>
+  <text x="764" y="648" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">39</text>
+  <text x="950" y="648" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">187</text>
+  <line x1="84" y1="700" x2="996" y2="700" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 3 ── -->
+  <text x="112" y="772" font-family="system-ui, -apple-system, sans-serif" font-size="48" fill="#cd7c3a" text-anchor="middle">🥉</text>
+  <text x="280" y="760" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x9d4c...8b33</text>
+  <rect x="280" y="772" width="192" height="36" rx="18" fill="rgba(249,115,22,0.1)" stroke="rgba(249,115,22,0.3)" stroke-width="1.5"/>
+  <text x="376" y="796" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#f97316" text-anchor="middle">CELO + BASE</text>
+  <text x="764" y="772" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">31</text>
+  <text x="950" y="772" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">145</text>
+  <line x1="84" y1="824" x2="996" y2="824" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 4 ── -->
+  <text x="112" y="892" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#888888" text-anchor="middle">4</text>
+  <text x="280" y="888" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x4a2e...c119</text>
+  <rect x="280" y="896" width="100" height="36" rx="18" fill="rgba(252,180,40,0.12)" stroke="rgba(252,180,40,0.35)" stroke-width="1.5"/>
+  <text x="330" y="920" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#fcb428" text-anchor="middle">CELO</text>
+  <text x="764" y="896" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">28</text>
+  <text x="950" y="896" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">134</text>
+  <line x1="84" y1="948" x2="996" y2="948" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 5 — "YOU" highlighted ── -->
+  <rect x="60" y="948" width="960" height="128" fill="rgba(249,115,22,0.05)"/>
+  <rect x="60" y="948" width="4" height="128" fill="#f97316"/>
+  <text x="112" y="1020" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#888888" text-anchor="middle">5</text>
+  <!-- YOU badge -->
+  <rect x="280" y="960" width="72" height="36" rx="6" fill="#f97316"/>
+  <text x="316" y="984" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#000000" text-anchor="middle">YOU</text>
+  <text x="372" y="1012" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0xd4f1...2a88</text>
+  <rect x="280" y="1020" width="100" height="36" rx="18" fill="rgba(252,180,40,0.12)" stroke="rgba(252,180,40,0.35)" stroke-width="1.5"/>
+  <text x="330" y="1044" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#fcb428" text-anchor="middle">CELO</text>
+  <text x="764" y="1020" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">21</text>
+  <text x="950" y="1020" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">98</text>
+  <line x1="84" y1="1076" x2="996" y2="1076" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 6 ── -->
+  <text x="112" y="1144" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#888888" text-anchor="middle">6</text>
+  <text x="280" y="1140" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x1e9b...7711</text>
+  <rect x="280" y="1148" width="100" height="36" rx="18" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.3)" stroke-width="1.5"/>
+  <text x="330" y="1172" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">BASE</text>
+  <text x="764" y="1148" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">19</text>
+  <text x="950" y="1148" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">91</text>
+  <line x1="84" y1="1200" x2="996" y2="1200" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 7 ── -->
+  <text x="112" y="1268" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#888888" text-anchor="middle">7</text>
+  <text x="280" y="1264" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x6c5d...3f90</text>
+  <rect x="280" y="1272" width="192" height="36" rx="18" fill="rgba(249,115,22,0.1)" stroke="rgba(249,115,22,0.3)" stroke-width="1.5"/>
+  <text x="376" y="1296" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#f97316" text-anchor="middle">CELO + BASE</text>
+  <text x="764" y="1272" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">14</text>
+  <text x="950" y="1272" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">67</text>
+  <line x1="84" y1="1324" x2="996" y2="1324" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 8 ── -->
+  <text x="112" y="1392" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#888888" text-anchor="middle">8</text>
+  <text x="280" y="1388" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x8a3c...0d44</text>
+  <rect x="280" y="1396" width="100" height="36" rx="18" fill="rgba(252,180,40,0.12)" stroke="rgba(252,180,40,0.35)" stroke-width="1.5"/>
+  <text x="330" y="1420" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#fcb428" text-anchor="middle">CELO</text>
+  <text x="764" y="1396" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">11</text>
+  <text x="950" y="1396" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">53</text>
+  <line x1="84" y1="1448" x2="996" y2="1448" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 9 ── -->
+  <text x="112" y="1516" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#888888" text-anchor="middle">9</text>
+  <text x="280" y="1512" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x3b7e...a225</text>
+  <rect x="280" y="1520" width="100" height="36" rx="18" fill="rgba(59,130,246,0.1)" stroke="rgba(59,130,246,0.3)" stroke-width="1.5"/>
+  <text x="330" y="1544" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#60a5fa" text-anchor="middle">BASE</text>
+  <text x="764" y="1520" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">9</text>
+  <text x="950" y="1520" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">44</text>
+  <line x1="84" y1="1572" x2="996" y2="1572" stroke="#222222" stroke-width="1"/>
+
+  <!-- ── ROW 10 ── -->
+  <text x="112" y="1640" font-family="system-ui, -apple-system, sans-serif" font-size="36" fill="#888888" text-anchor="middle">10</text>
+  <text x="280" y="1636" font-family="'Courier New', monospace" font-size="30" fill="#f5f5f5">0x5f2a...8b67</text>
+  <rect x="280" y="1644" width="192" height="36" rx="18" fill="rgba(249,115,22,0.1)" stroke="rgba(249,115,22,0.3)" stroke-width="1.5"/>
+  <text x="376" y="1668" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#f97316" text-anchor="middle">CELO + BASE</text>
+  <text x="764" y="1644" font-family="'Courier New', monospace" font-size="40" font-weight="700" fill="#f97316" text-anchor="middle">7</text>
+  <text x="950" y="1644" font-family="'Courier New', monospace" font-size="30" fill="#888888" text-anchor="middle">35</text>
+
+  <!-- Bottom of card — your stats summary -->
+  <rect x="84" y="1716" width="912" height="4" fill="#222222"/>
+  <text x="540" y="1754" font-family="system-ui, -apple-system, sans-serif" font-size="26" fill="#888888" text-anchor="middle">Your rank: #5 · 21 day streak · 98 total check-ins</text>
+
+  <!-- ── COPY REFERRAL ── -->
+  <rect x="60" y="1792" width="960" height="84" rx="20" fill="rgba(249,115,22,0.08)" stroke="rgba(249,115,22,0.25)" stroke-width="2"/>
+  <text x="540" y="1844" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="#f97316" text-anchor="middle">📋 Copy invite link · Invite friends</text>
+
+  <!-- ── FOOTER ── -->
+  <text x="540" y="1898" font-family="system-ui, -apple-system, sans-serif" font-size="26" fill="#444444" text-anchor="middle">Built on Celo &amp; Base · MiniPay &amp; Farcaster</text>
+  <rect x="424" y="1906" width="232" height="10" rx="5" fill="#333333"/>
+</svg>

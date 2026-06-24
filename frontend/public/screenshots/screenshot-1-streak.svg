@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="bg-glow" cx="50%" cy="0%" r="60%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bg-glow2" cx="80%" cy="100%" r="40%">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Orange button glow -->
+    <filter id="orange-glow">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="text-glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="dot-glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Phone frame clip -->
+    <clipPath id="phone-clip">
+      <rect x="0" y="0" width="1080" height="1920" rx="0" ry="0"/>
+    </clipPath>
+
+    <!-- Skeleton shimmer -->
+    <linearGradient id="shimmer" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="50%" stop-color="#222222"/>
+      <stop offset="100%" stop-color="#1a1a1a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── Background ── -->
+  <rect width="1080" height="1920" fill="#0a0a0a"/>
+  <rect width="1080" height="1920" fill="url(#bg-glow)"/>
+  <rect width="1080" height="1920" fill="url(#bg-glow2)"/>
+
+  <!-- ── Status bar ── -->
+  <text x="72" y="84" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="600" fill="#f5f5f5">9:41</text>
+  <!-- Signal bars -->
+  <rect x="846" y="54" width="14" height="30" rx="3" fill="#f5f5f5"/>
+  <rect x="866" y="46" width="14" height="38" rx="3" fill="#f5f5f5"/>
+  <rect x="886" y="38" width="14" height="46" rx="3" fill="#f5f5f5"/>
+  <rect x="906" y="30" width="14" height="54" rx="3" fill="#f5f5f5"/>
+  <!-- Wifi -->
+  <path d="M944 66 Q960 50 976 66" stroke="#f5f5f5" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M952 76 Q960 68 968 76" stroke="#f5f5f5" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="960" cy="86" r="6" fill="#f5f5f5"/>
+  <!-- Battery -->
+  <rect x="996" y="42" width="60" height="30" rx="6" fill="none" stroke="#f5f5f5" stroke-width="3"/>
+  <rect x="1056" y="50" width="8" height="14" rx="2" fill="#f5f5f5"/>
+  <rect x="999" y="45" width="48" height="24" rx="4" fill="#f5f5f5"/>
+
+  <!-- Dynamic Island -->
+  <rect x="396" y="24" width="288" height="60" rx="30" fill="#000000"/>
+
+  <!-- ── HEADER ── -->
+  <!-- Logo group -->
+  <g transform="translate(60, 136)">
+    <rect width="80" height="80" rx="18" fill="#111111"/>
+    <circle cx="40" cy="38" r="30" fill="#f97316"/>
+    <path d="M40 18 C50 28 58 37 58 46 C58 55 51 62 40 62 C29 62 22 55 22 46 C22 37 30 28 40 18Z" fill="#ffffff" opacity="0.95"/>
+    <circle cx="33" cy="44" r="7" fill="#ffffff" opacity="0.4"/>
+  </g>
+  <text x="160" y="186" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="800" fill="#f5f5f5" letter-spacing="-1">DailyDrop</text>
+
+  <!-- MiniPay badge -->
+  <rect x="742" y="148" width="276" height="56" rx="28" fill="rgba(34,197,94,0.15)" stroke="rgba(34,197,94,0.35)" stroke-width="2"/>
+  <text x="880" y="183" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#22c55e" text-anchor="middle">✅ MiniPay</text>
+
+  <!-- ── HERO ── -->
+  <text x="60" y="334" font-family="system-ui, -apple-system, sans-serif" font-size="76" font-weight="800" fill="#f5f5f5" letter-spacing="-2">Check in daily.</text>
+  <text x="60" y="432" font-family="system-ui, -apple-system, sans-serif" font-size="76" font-weight="800" fill="#f97316" letter-spacing="-2">Earn DROP.</text>
+  <text x="60" y="510" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#888888">7-day streak = 10 DROP tokens. On Celo &amp; Base.</text>
+
+  <!-- ── PROTOCOL STATS ── -->
+  <!-- 4-column grid -->
+  <!-- Card 1 -->
+  <rect x="60" y="556" width="228" height="128" rx="20" fill="#111111" stroke="#222222" stroke-width="2"/>
+  <text x="174" y="616" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="800" fill="#f97316" text-anchor="middle">1,247</text>
+  <text x="174" y="654" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#888888" text-anchor="middle" letter-spacing="1">TOTAL CHECK-INS</text>
+  <!-- Card 2 -->
+  <rect x="304" y="556" width="228" height="128" rx="20" fill="#111111" stroke="#222222" stroke-width="2"/>
+  <text x="418" y="616" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="800" fill="#f97316" text-anchor="middle">389</text>
+  <text x="418" y="654" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#888888" text-anchor="middle" letter-spacing="1">UNIQUE WALLETS</text>
+  <!-- Card 3 -->
+  <rect x="548" y="556" width="228" height="128" rx="20" fill="#111111" stroke="#222222" stroke-width="2"/>
+  <text x="662" y="616" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="800" fill="#f97316" text-anchor="middle">241</text>
+  <text x="662" y="654" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#888888" text-anchor="middle" letter-spacing="1">CELO</text>
+  <!-- Card 4 -->
+  <rect x="792" y="556" width="228" height="128" rx="20" fill="#111111" stroke="#222222" stroke-width="2"/>
+  <text x="906" y="616" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="800" fill="#f97316" text-anchor="middle">148</text>
+  <text x="906" y="654" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#888888" text-anchor="middle" letter-spacing="1">BASE</text>
+
+  <!-- ── APP CARD ── -->
+  <rect x="60" y="724" width="960" height="820" rx="32" fill="#111111" stroke="#222222" stroke-width="2"/>
+
+  <!-- Streak main display -->
+  <text x="140" y="840" font-family="system-ui, -apple-system, sans-serif" font-size="72" fill="#f5f5f5">🔥</text>
+
+  <!-- Giant streak number with glow -->
+  <text x="228" y="860" font-family="'Courier New', monospace" font-size="180" font-weight="700" fill="#f97316" filter="url(#text-glow)" opacity="0.3">5</text>
+  <text x="228" y="860" font-family="'Courier New', monospace" font-size="180" font-weight="700" fill="#f97316">5</text>
+
+  <text x="420" y="808" font-family="system-ui, -apple-system, sans-serif" font-size="40" fill="#888888" font-weight="600">day streak</text>
+
+  <!-- Celo chain badge -->
+  <rect x="420" y="824" width="136" height="52" rx="26" fill="rgba(252,180,40,0.12)" stroke="rgba(252,180,40,0.35)" stroke-width="2"/>
+  <text x="488" y="857" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="700" fill="#fcb428" text-anchor="middle">Celo</text>
+
+  <!-- ── 7-dot streak progress ── -->
+  <g transform="translate(140, 904)">
+    <!-- Day 1 - filled -->
+    <circle cx="52" cy="52" r="42" fill="rgba(249,115,22,0.15)" stroke="#f97316" stroke-width="3"/>
+    <text x="52" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#f97316" text-anchor="middle">✓</text>
+    <!-- Day 2 - filled -->
+    <circle cx="168" cy="52" r="42" fill="rgba(249,115,22,0.15)" stroke="#f97316" stroke-width="3"/>
+    <text x="168" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#f97316" text-anchor="middle">✓</text>
+    <!-- Day 3 - filled -->
+    <circle cx="284" cy="52" r="42" fill="rgba(249,115,22,0.15)" stroke="#f97316" stroke-width="3"/>
+    <text x="284" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#f97316" text-anchor="middle">✓</text>
+    <!-- Day 4 - filled -->
+    <circle cx="400" cy="52" r="42" fill="rgba(249,115,22,0.15)" stroke="#f97316" stroke-width="3"/>
+    <text x="400" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#f97316" text-anchor="middle">✓</text>
+    <!-- Day 5 - current/pulsing -->
+    <circle cx="516" cy="52" r="42" fill="rgba(249,115,22,0.15)" stroke="#f97316" stroke-width="3"/>
+    <circle cx="516" cy="52" r="56" fill="none" stroke="#f97316" stroke-width="2" opacity="0.3"/>
+    <text x="516" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#f97316" text-anchor="middle">✓</text>
+    <!-- Day 6 - empty -->
+    <circle cx="632" cy="52" r="42" fill="none" stroke="#222222" stroke-width="3"/>
+    <text x="632" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#444444" text-anchor="middle">6</text>
+    <!-- Day 7 - empty -->
+    <circle cx="748" cy="52" r="42" fill="none" stroke="#222222" stroke-width="3"/>
+    <text x="748" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#444444" text-anchor="middle">7</text>
+  </g>
+
+  <!-- Streak hint -->
+  <text x="540" y="1060" font-family="system-ui, -apple-system, sans-serif" font-size="34" fill="#888888" text-anchor="middle">2 more days to earn 10 DROP</text>
+
+  <!-- ── STATS ROW ── -->
+  <!-- Stat card 1 -->
+  <rect x="100" y="1096" width="272" height="132" rx="20" fill="#1a1a1a" stroke="#222222" stroke-width="2"/>
+  <text x="236" y="1148" font-family="'Courier New', monospace" font-size="44" font-weight="700" fill="#f5f5f5" text-anchor="middle">31</text>
+  <text x="236" y="1184" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#888888" text-anchor="middle" letter-spacing="1">TOTAL CHECK-INS</text>
+  <!-- Stat card 2 -->
+  <rect x="404" y="1096" width="272" height="132" rx="20" fill="#1a1a1a" stroke="#222222" stroke-width="2"/>
+  <text x="540" y="1148" font-family="'Courier New', monospace" font-size="44" font-weight="700" fill="#f5f5f5" text-anchor="middle">40.00</text>
+  <text x="540" y="1184" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#888888" text-anchor="middle" letter-spacing="1">DROP BALANCE</text>
+  <!-- Stat card 3 -->
+  <rect x="708" y="1096" width="272" height="132" rx="20" fill="#1a1a1a" stroke="#222222" stroke-width="2"/>
+  <text x="844" y="1148" font-family="'Courier New', monospace" font-size="44" font-weight="700" fill="#22c55e" text-anchor="middle">Ready!</text>
+  <text x="844" y="1184" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="#888888" text-anchor="middle" letter-spacing="1">NEXT CHECK-IN</text>
+
+  <!-- Chain indicator -->
+  <g transform="translate(100, 1264)">
+    <circle cx="20" cy="20" r="12" fill="#35D07F"/>
+    <text x="44" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#f5f5f5">Celo</text>
+  </g>
+
+  <!-- ── CHECK-IN BUTTON ── -->
+  <!-- Orange glow behind button -->
+  <rect x="100" y="1312" width="880" height="108" rx="20" fill="#f97316" filter="url(#orange-glow)" opacity="0.35"/>
+  <rect x="100" y="1312" width="880" height="108" rx="20" fill="#f97316"/>
+  <text x="540" y="1380" font-family="system-ui, -apple-system, sans-serif" font-size="40" font-weight="700" fill="#000000" text-anchor="middle">🔥 Check in on Celo</text>
+
+  <!-- Add DROP token button -->
+  <rect x="100" y="1448" width="880" height="96" rx="20" fill="transparent" stroke="#222222" stroke-width="2" stroke-dasharray="12,6"/>
+  <text x="540" y="1504" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="#888888" text-anchor="middle">+ Add DROP to wallet</text>
+
+  <!-- ── HOW IT WORKS ── -->
+  <text x="60" y="1620" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="700" fill="#888888" letter-spacing="-0.5">How it works</text>
+
+  <!-- Steps -->
+  <rect x="60" y="1644" width="960" height="80" rx="16" fill="#111111" stroke="#222222" stroke-width="2"/>
+  <rect x="84" y="1666" width="36" height="36" rx="18" fill="rgba(249,115,22,0.15)" stroke="#f97316" stroke-width="1.5"/>
+  <text x="102" y="1690" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="#f97316" text-anchor="middle">1</text>
+  <text x="144" y="1692" font-family="system-ui, -apple-system, sans-serif" font-size="30" fill="#f5f5f5">Connect wallet (MiniPay, MetaMask, etc.)</text>
+
+  <rect x="60" y="1740" width="960" height="80" rx="16" fill="#111111" stroke="#f97316" stroke-width="2"/>
+  <rect x="84" y="1762" width="36" height="36" rx="18" fill="rgba(249,115,22,0.15)" stroke="#f97316" stroke-width="1.5"/>
+  <text x="102" y="1786" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="700" fill="#f97316" text-anchor="middle">2</text>
+  <text x="144" y="1788" font-family="system-ui, -apple-system, sans-serif" font-size="30" fill="#f97316" font-weight="600">Click Check-in once a day  ←  You are here</text>
+
+  <!-- ── FOOTER ── -->
+  <text x="540" y="1884" font-family="system-ui, -apple-system, sans-serif" font-size="26" fill="#444444" text-anchor="middle">Built on Celo &amp; Base · MiniPay &amp; Farcaster</text>
+
+  <!-- Home indicator -->
+  <rect x="424" y="1892" width="232" height="10" rx="5" fill="#333333"/>
+</svg>
