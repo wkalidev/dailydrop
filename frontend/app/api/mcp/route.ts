@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const APP_URL    = "https://dailydrop-five.vercel.app";
-const X402_INFO  = JSON.stringify({
+const APP_URL = "https://dailydrop-five.vercel.app";
+
+const PAYMENT_REQUIREMENTS = {
   scheme:            "exact",
   network:           "base",
   maxAmountRequired: "10000",
   resource:          `${APP_URL}/api/mcp`,
   description:       "Batch wallet verification (up to 100 addresses) — 0.01 USDC",
   mimeType:          "application/json",
-  payTo:             "0x038F496eCf99ecA5959A40493C96670Ea8a14345",
+  payTo:             "0xDEAcDe6eC27Fd0cD972c1232C4f0d4171dda2357",
   maxTimeoutSeconds: 300,
   asset:             "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
   extra:             { name: "USDC", version: "2" },
-});
+};
+
+const X402_INFO = JSON.stringify(PAYMENT_REQUIREMENTS);
 
 const TOOLS = [
   {
@@ -40,7 +43,7 @@ const TOOLS = [
   },
   {
     name: "verify_batch",
-    description: "Verify up to 100 wallets at once for airdrop filtering. Returns pass/fail per address.",
+    description: "Verify up to 100 wallets at once for airdrop filtering. Returns pass/fail per address. Requires x402 payment (0.01 USDC on Base).",
     inputSchema: {
       type: "object",
       properties: {
@@ -61,9 +64,10 @@ const TOOLS = [
 ];
 
 const CORS = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Origin":   "*",
+  "Access-Control-Allow-Methods":  "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers":  "Content-Type, X-Payment",
+  "Access-Control-Expose-Headers": "X-Payment-Required, X-Payment-Response",
 };
 
 export async function OPTIONS() {
@@ -89,6 +93,40 @@ export async function GET() {
   );
 }
 
+// ─── x402 payment verification ────────────────────────────────────────────────
+
+async function verifyX402Payment(xPayment: string): Promise<{ ok: boolean; reason?: string }> {
+  try {
+    const res = await fetch("https://x402.org/facilitator/verify", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ payment: xPayment, paymentRequirements: PAYMENT_REQUIREMENTS }),
+      signal:  AbortSignal.timeout(10_000),
+    });
+    if (!res.ok) return { ok: false, reason: `Facilitator HTTP ${res.status}` };
+    const json = await res.json();
+    if (!json.isValid) return { ok: false, reason: json.invalidReason ?? "Invalid payment" };
+    return { ok: true };
+  } catch {
+    return { ok: false, reason: "Facilitator unreachable" };
+  }
+}
+
+async function settleX402Payment(xPayment: string): Promise<void> {
+  try {
+    await fetch("https://x402.org/facilitator/settle", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ payment: xPayment, paymentRequirements: PAYMENT_REQUIREMENTS }),
+      signal:  AbortSignal.timeout(15_000),
+    });
+  } catch {
+    // Settlement failure is non-fatal — payment was already verified
+  }
+}
+
+// ─── Rate limiting ────────────────────────────────────────────────────────────
+
 const rateLimit = new Map<string, { count: number; reset: number }>();
 
 function checkRateLimit(ip: string): boolean {
@@ -106,6 +144,8 @@ function checkRateLimit(ip: string): boolean {
 function isValidAddress(addr: string): boolean {
   return /^0x[0-9a-fA-F]{40}$/.test(addr);
 }
+
+// ─── POST handler ─────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
@@ -155,7 +195,7 @@ export async function POST(req: NextRequest) {
         }, { headers: CORS });
       }
       try {
-        const url = `${APP_URL}/api/verify?address=${encodeURIComponent(address)}&minStreak=${minStreak}`;
+        const url  = `${APP_URL}/api/verify?address=${encodeURIComponent(address)}&minStreak=${minStreak}`;
         const res  = await fetch(url);
         const data = await res.json();
         return NextResponse.json({
@@ -179,7 +219,7 @@ export async function POST(req: NextRequest) {
         }, { headers: CORS });
       }
       try {
-        const url = `${APP_URL}/api/verify?address=${encodeURIComponent(address)}&minStreak=1`;
+        const url  = `${APP_URL}/api/verify?address=${encodeURIComponent(address)}&minStreak=1`;
         const res  = await fetch(url);
         const data = await res.json();
         return NextResponse.json({
@@ -195,13 +235,24 @@ export async function POST(req: NextRequest) {
     }
 
     if (toolName === "verify_batch") {
-      const payment = req.headers.get("X-Payment");
-      if (!payment) {
+      // ── x402 gate ──────────────────────────────────────────────────────────
+      const xPayment = req.headers.get("X-Payment");
+      if (!xPayment) {
         return NextResponse.json(
           { jsonrpc: "2.0", id, error: { code: -32402, message: "Payment required. Include X-Payment header with 0.01 USDC proof on Base." } },
           { status: 402, headers: { ...CORS, "X-Payment-Required": X402_INFO } }
         );
       }
+
+      const verification = await verifyX402Payment(xPayment);
+      if (!verification.ok) {
+        return NextResponse.json(
+          { jsonrpc: "2.0", id, error: { code: -32402, message: `Payment invalid: ${verification.reason}` } },
+          { status: 402, headers: { ...CORS, "X-Payment-Required": X402_INFO } }
+        );
+      }
+
+      // ── Input validation ────────────────────────────────────────────────────
       const { addresses, minStreak = 7 } = args;
       if (!Array.isArray(addresses) || addresses.length === 0) {
         return NextResponse.json({
@@ -222,6 +273,8 @@ export async function POST(req: NextRequest) {
           result: { content: [{ type: "text", text: JSON.stringify({ error: `Invalid addresses: ${invalid.join(", ")}` }) }] },
         }, { headers: CORS });
       }
+
+      // ── Execute batch ───────────────────────────────────────────────────────
       try {
         const results = await Promise.allSettled(
           addresses.map(async (addr: string) => {
@@ -233,10 +286,14 @@ export async function POST(req: NextRequest) {
         const batch = results.map((r, i) =>
           r.status === "fulfilled" ? r.value : { address: addresses[i], passed: false, streak: 0, error: true }
         );
+
+        // Settle payment after successful execution (non-blocking)
+        settleX402Payment(xPayment);
+
         return NextResponse.json({
           jsonrpc: "2.0", id,
           result: { content: [{ type: "text", text: JSON.stringify({ minStreak, total: batch.length, passed: batch.filter((r) => r.passed).length, results: batch }) }] },
-        }, { headers: CORS });
+        }, { headers: { ...CORS, "X-Payment-Response": "settled" } });
       } catch {
         return NextResponse.json({
           jsonrpc: "2.0", id,

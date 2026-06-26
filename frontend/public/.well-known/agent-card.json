@@ -76,7 +76,7 @@
     "supported": true,
     "network": "base",
     "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-    "payTo": "0x038F496eCf99ecA5959A40493C96670Ea8a14345",
+    "payTo": "0xDEAcDe6eC27Fd0cD972c1232C4f0d4171dda2357",
     "pricing": [
       {
         "tool": "verify_batch",
