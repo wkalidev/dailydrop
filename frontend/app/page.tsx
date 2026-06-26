@@ -55,10 +55,10 @@ export default function Home() {
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
 
   const streak = userData ? Number(userData[0]) : 0;
-  const totalCheckIns = userData ? Number(userData[2]) : 0;
-  const canCheckIn = userData ? userData[3] : true;
-  const canClaim = userData ? userData[4] : false;
-  const nextCheckIn = userData ? Number(userData[5]) : 0;
+  const totalCheckIns = 0; // removed from contract storage; off-chain via /api/stats
+  const canCheckIn = userData ? Boolean(userData[2]) : true;
+  const canClaim = userData ? Boolean(userData[3]) : false;
+  const nextCheckIn = userData ? Number(userData[4]) : 0;
   const formattedBalance = dropBalance ? parseFloat(formatEther(dropBalance)).toFixed(2) : "0.00";
 
   const isWrongNetwork = isConnected && !CONTRACT_ADDRESSES[chainId];
@@ -223,9 +223,9 @@ export default function Home() {
         </div>
         <p>Built on Celo &amp; Base · Compatible with MiniPay &amp; Farcaster</p>
         <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", fontSize: 11 }}>
-          <a href="/terms" style={{ color: "var(--text-muted)" }}>Terms</a>
-          <a href="/privacy" style={{ color: "var(--text-muted)" }}>Privacy</a>
-          <a href="https://github.com/wkalidev/dailydrop/issues" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>Support</a>
+          <a href="/terms" target="_self" style={{ color: "var(--text-muted)" }}>Terms</a>
+          <a href="/privacy" target="_self" style={{ color: "var(--text-muted)" }}>Privacy</a>
+          <a href="https://github.com/wkalidev/dailydrop/issues" target="_self" style={{ color: "var(--text-muted)" }}>Support</a>
           <a href="https://github.com/wkalidev/dailydrop" target="_blank" rel="noopener noreferrer" style={{ color: "var(--text-muted)" }}>
             GitHub
           </a>

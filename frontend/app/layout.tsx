@@ -88,6 +88,24 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${syne.variable} ${spaceMono.variable}`}>
+      <head>
+        {/* Critical above-the-fold CSS inlined to eliminate render-blocking paint */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          :root{--bg:#0a0a0a;--surface:#111111;--surface2:#1a1a1a;--border:#222222;--accent:#f97316;--accent2:#fb923c;--accent-dim:rgba(249,115,22,.12);--success:#22c55e;--error:#ef4444;--text:#f5f5f5;--text-dim:#888;--text-muted:#444;--radius:16px;--radius-sm:10px}
+          *{box-sizing:border-box;margin:0;padding:0}
+          body{background:var(--bg);color:var(--text);font-family:var(--font-syne),system-ui,sans-serif;min-height:100vh;background-image:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(249,115,22,.08) 0%,transparent 70%),radial-gradient(ellipse 40% 30% at 80% 100%,rgba(249,115,22,.04) 0%,transparent 60%)}
+          .app-container{max-width:480px;margin:0 auto;padding:0 20px 60px;min-height:100vh;display:flex;flex-direction:column;gap:32px}
+          .app-header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 0}
+          .logo{display:flex;align-items:center;gap:8px}
+          .logo-text{font-family:var(--font-syne),sans-serif;font-weight:800;font-size:20px;letter-spacing:-.5px;color:var(--text)}
+          .hero{padding-top:8px}
+          .hero-title{font-size:clamp(32px,8vw,44px);font-weight:800;line-height:1.1;letter-spacing:-1.5px}
+          .hero-accent{color:var(--accent)}
+          .hero-sub{margin-top:12px;color:var(--text-dim);font-size:15px;line-height:1.5}
+          .connect-prompt{display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
+          .connect-icon{width:64px;height:64px}
+        ` }} />
+      </head>
       <body>
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {

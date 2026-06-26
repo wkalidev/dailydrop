@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const APP_URL = "https://dailydrop-five.vercel.app";
+const APP_URL    = "https://dailydrop-five.vercel.app";
+const X402_INFO  = JSON.stringify({
+  scheme:            "exact",
+  network:           "base",
+  maxAmountRequired: "10000",
+  resource:          `${APP_URL}/api/mcp`,
+  description:       "Batch wallet verification (up to 100 addresses) — 0.01 USDC",
+  mimeType:          "application/json",
+  payTo:             "0x038F496eCf99ecA5959A40493C96670Ea8a14345",
+  maxTimeoutSeconds: 300,
+  asset:             "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  extra:             { name: "USDC", version: "2" },
+});
 
 const TOOLS = [
   {
@@ -183,6 +195,13 @@ export async function POST(req: NextRequest) {
     }
 
     if (toolName === "verify_batch") {
+      const payment = req.headers.get("X-Payment");
+      if (!payment) {
+        return NextResponse.json(
+          { jsonrpc: "2.0", id, error: { code: -32402, message: "Payment required. Include X-Payment header with 0.01 USDC proof on Base." } },
+          { status: 402, headers: { ...CORS, "X-Payment-Required": X402_INFO } }
+        );
+      }
       const { addresses, minStreak = 7 } = args;
       if (!Array.isArray(addresses) || addresses.length === 0) {
         return NextResponse.json({

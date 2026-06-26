@@ -13,11 +13,22 @@ const nextConfig = {
           { key: "Access-Control-Allow-Origin", value: "*" },
         ],
       },
-    ];
-  },
-  async rewrites() {
-    return [
-      { source: "/.well-known/agent-card.json", destination: "/api/agent-card" },
+      {
+        source: "/.well-known/openapi.json",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
+      {
+        source: "/.well-known/agent-card.json",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
     ];
   },
 };

@@ -16,6 +16,8 @@
 🏆 Leaderboard : https://dailydrop-five.vercel.app/leaderboard
 🛡️ Shield API : https://dailydrop-five.vercel.app/api/verify
 🤖 MCP Server : https://dailydrop-five.vercel.app/api/mcp
+🤖 Agent Card : https://dailydrop-five.vercel.app/.well-known/agent-card.json
+📄 OpenAPI : https://dailydrop-five.vercel.app/.well-known/openapi.json
 📦 SDK : `npm i @dailydrop/shield`
 🐙 GitHub : https://github.com/wkalidev/dailydrop
 
@@ -129,8 +131,44 @@ G$ token on Celo: `0x62B8B11039FcfE5aB0C56E502b1C372A3D2a9C7A`
 
 ---
 
+## Agent Score (8004scan)
+
+| Category | Score |
+|----------|-------|
+| Engagement | 13/100 (2 reviews) |
+| Service | 100/100 — MCP + OASF + A2A |
+| Compliance | 100/100 — full metadata |
+| x402 | enforced on verify_batch |
+| **Total** | **targeting 90+/100** |
+
+Agent URL: https://8004scan.io/agents/celo/9421
+
+---
+
+## x402 Payment (verify_batch)
+
+`verify_batch` (up to 100 wallets) requires an HTTP 402 payment. When called without an `X-Payment` header the server returns:
+
+```
+HTTP 402
+X-Payment-Required: {"scheme":"exact","network":"base","maxAmountRequired":"10000","asset":"0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",...}
+```
+
+Pay 0.01 USDC on Base to `0x038F496eCf99ecA5959A40493C96670Ea8a14345`, then retry with the `X-Payment` header. All other tools are free.
+
+---
+
+## OpenAPI / OASF
+
+Full API spec at `/.well-known/openapi.json` (OpenAPI 3.1.0).
+
+Declares x402 security scheme, all endpoints, and OASF metadata for agent-scanner compliance.
+
+---
+
 ## Performance
 
+- **Inline critical CSS** — above-the-fold styles inlined in `<head>` for immediate paint (no FOUC)
 - Fonts: self-hosted at build time via `next/font/google` — eliminates render-blocking Google Fonts request
 - Viewport: user zoom enabled (accessibility compliant, WCAG 1.4.4)
 - CLS: protocol stats section always reserves DOM space (skeleton while loading) to prevent layout shift
@@ -143,11 +181,13 @@ G$ token on Celo: `0x62B8B11039FcfE5aB0C56E502b1C372A3D2a9C7A`
 | Layer | Tech |
 |---|---|
 | Smart Contracts | Solidity 0.8.20, OpenZeppelin ERC20 |
-| Frontend | Next.js 14, TypeScript, Tailwind CSS |
+| Frontend | Next.js 14, TypeScript |
 | Web3 | wagmi v2, viem, RainbowKit |
 | Shield SDK | TypeScript, viem (`@dailydrop/shield` v1.2.0) |
+| AI Coach | Claude Haiku 4.5 (Anthropic) |
 | Chains | Celo Mainnet + Base Mainnet |
 | Deploy | Vercel (frontend), Hardhat (contracts) |
+| Agent | MCP 2024-11-05, A2A, OASF, x402 |
 
 ---
 
@@ -195,7 +235,7 @@ Auto-detects MiniPay via `window.ethereum.isMiniPay`:
 - Graceful connection error recovery with retry button
 - Gas fees in cUSD
 - Mobile-optimized UI (360×640 px minimum viewport, user zoom enabled)
-- Terms / Privacy / Support links accessible in-app footer
+- Terms / Privacy / Support links open `target="_self"` (in-app, no external tab)
 
 Test: https://dailydrop-five.vercel.app
 
@@ -249,7 +289,7 @@ Returns wallet addresses sorted by activity, sourced from Etherscan V2 API with 
 
 ### `GET /api/agent?address=0x...`
 
-AI streak coach powered by Claude Haiku. Returns personalized motivation, action tip, and on-chain data.
+AI streak coach powered by Claude Haiku 4.5. Returns personalized motivation, action tip, and on-chain data.
 
 ```json
 {
@@ -270,20 +310,29 @@ Environment variable: `ANTHROPIC_API_KEY` (optional — falls back to determinis
 
 ### `GET/POST /api/mcp`
 
-MCP Server (protocol `2024-11-05`). Tools: `verify_streak`, `get_profile`, `verify_batch`, `get_stats`.
+MCP Server (protocol `2024-11-05`). Tools: `verify_streak`, `get_profile`, `verify_batch` (x402), `get_stats`.
 
 ```bash
 # Discovery
 GET https://dailydrop-five.vercel.app/api/mcp
 
-# Tool call
+# Tool call (free)
 POST https://dailydrop-five.vercel.app/api/mcp
 {"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"verify_streak","arguments":{"address":"0xABC...","minStreak":7}}}
+
+# verify_batch — requires X-Payment header (0.01 USDC on Base)
+POST https://dailydrop-five.vercel.app/api/mcp
+X-Payment: <signed-payment-proof>
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"verify_batch","arguments":{"addresses":["0xABC...","0xDEF..."],"minStreak":7}}}
 ```
 
 ### `GET /.well-known/agent-card.json`
 
-A2A AgentCard (v0.3.0) — 5 skills: `verify_streak`, `get_profile`, `verify_batch`, `get_leaderboard`, `get_stats`.
+A2A AgentCard v1.2.0 — 5 skills: `verify_streak`, `get_profile`, `verify_batch`, `get_leaderboard`, `get_stats`. Full OASF metadata, x402 pricing, and authentication scheme declared.
+
+### `GET /.well-known/openapi.json`
+
+OpenAPI 3.1.0 spec for all Shield API endpoints. Declares x402 security scheme. Used by OASF-compatible agent scanners.
 
 ---
 
@@ -331,15 +380,17 @@ Next.js API route (`/api/relayer`) that receives check-in notifications and call
 - ✅ DailyDropShield deployed Celo mainnet
 - ✅ StreakMaster + StreakNFT deployed Base mainnet
 - ✅ Public REST API live — `/api/verify`, `/api/stats`, `/api/leaderboard`, `/api/agent`
-- ✅ MCP Server live — `/api/mcp`
-- ✅ A2A AgentCard — `/.well-known/agent-card.json`
+- ✅ MCP Server live — `/api/mcp` (x402 enforced on verify_batch)
+- ✅ A2A AgentCard v1.2.0 — `/.well-known/agent-card.json` (full metadata, x402, OASF)
+- ✅ OpenAPI 3.1.0 — `/.well-known/openapi.json` (x402Payment scheme, OASF)
 - ✅ `@dailydrop/shield` v1.2.0 published on npm
-- ✅ MiniPay compatible (auto-detect, force Celo, no modal, reconnect on failure)
+- ✅ MiniPay compatible (auto-detect, force Celo, no modal, reconnect on failure, target="_self" links)
 - ✅ Farcaster Mini App (farcaster.json + frame endpoint)
 - ✅ G$ integration (GoodBuilders Season 4)
 - ✅ Leaderboard (Celoscan + Basescan, live on-chain)
-- ✅ AI streak coach (Claude Haiku + deterministic fallback)
+- ✅ AI streak coach (Claude Haiku 4.5 + deterministic fallback)
 - ✅ PWA (manifest + service worker)
+- ✅ Inline critical CSS shell for fast first paint
 - ✅ Fonts self-hosted via next/font (no render-blocking external requests)
 - ✅ Accessible viewport (user zoom enabled, WCAG 1.4.4 compliant)
 
